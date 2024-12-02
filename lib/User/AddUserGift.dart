@@ -1,162 +1,183 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hedieaty_project/Database/DatabaseClass.dart';
 import 'package:hedieaty_project/Models/Event.dart';
-import 'package:hedieaty_project/User/UserGiftList.dart';
 
 class NewGift extends StatefulWidget {
-  const NewGift({required this.event, super.key});
-
   final Events event;
 
+  const NewGift({required this.event, super.key});
+
   @override
-  State<StatefulWidget> createState() {
-    return _NewGiftState();
-  }
+  _NewGiftState createState() => _NewGiftState();
 }
 
-DataBaseClass mydb = DataBaseClass();
-
-final _giftNameController = TextEditingController();
-final _giftDescriptionController = TextEditingController();
-final _giftCategoryController = TextEditingController();
-final _giftPriceController = TextEditingController();
-final _giftPicController = TextEditingController();
-final keyAddGift = GlobalKey<FormState>();
-
 class _NewGiftState extends State<NewGift> {
-  @override
-  void initState() {
-    super.initState();
-    DataBaseClass mydb = DataBaseClass();
-    mydb.initialize();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _imageController = TextEditingController();
+  final mydb = DataBaseClass();
+
+  Future<void> saveGift() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      String userUID = user.uid;
+
+      // Prepare data for the local database
+      String name = _nameController.text.trim();
+      String description = _descriptionController.text.trim();
+      String category = _categoryController.text.trim();
+      double price = double.parse(_priceController.text.trim());
+      String giftPic = _imageController.text.trim();
+      int isPledged = 0; // Default to not pledged (0 for local DB)
+
+      // Insert gift into the local database
+      int localDBID = await mydb.insertData('''
+      INSERT INTO Gifts (Name, Description, Category, Price, GiftPic, isPledged, EventID)
+      VALUES ("$name", "$description", "$category", $price, "$giftPic", $isPledged, ${widget.event.ID})
+    ''');
+
+      // Prepare data for Firestore
+      Map<String, dynamic> giftData = {
+        'Name': name,
+        'Description': description,
+        'Category': category,
+        'Price': price,
+        'GiftPic': giftPic,
+        'isPledged': false, // Default to not pledged (false for Firestore)
+        'LocalDBID': localDBID,
+      };
+
+      // Add gift to Firestore under the current user's event
+      DocumentReference docRef = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userUID)
+          .collection('Events')
+          .doc(widget.event.FireStoreID)
+          .collection('Gifts')
+          .add(giftData);
+
+      // After saving to Firestore, update the local database with Firestore ID
+      String firestoreID = docRef.id;
+      String updateQuery = '''
+      UPDATE Gifts SET FireStoreID = '$firestoreID' WHERE ID = $localDBID
+    ''';
+      await mydb.updateData(updateQuery);
+
+      // Clear the input fields
+      _nameController.clear();
+      _descriptionController.clear();
+      _categoryController.clear();
+      _priceController.clear();
+      _imageController.clear();
+
+      Navigator.pop(context, true); // Indicate success
+    } catch (e) {
+      print("Error saving gift: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-          iconTheme: const IconThemeData(color: Colors.white),
-          title: const Text(
-            "Add New Gift",
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: const Text(
+          "Add New Gift",
+          style: TextStyle(color: Colors.white),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-              key: keyAddGift,
-              child: Column(
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Gift Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a gift name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a description';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _categoryController,
+                decoration: const InputDecoration(labelText: 'Category'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a category';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _priceController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Price'),
+                validator: (value) {
+                  if (value == null ||
+                      double.tryParse(value) == null ||
+                      double.parse(value) <= 0) {
+                    return 'Please enter a valid price';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _imageController,
+                decoration: const InputDecoration(labelText: 'Image URL'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an image URL';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Row(
                 children: [
-                  TextFormField(
-                    decoration:
-                    const InputDecoration(hintText: "Enter the Name"),
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.trim().length < 3 ||
-                          value.trim().length > 50) {
-                        return ("Check the name please");
-                      }
-                      return null;
+                  const Spacer(),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    onPressed: () {
+                      Navigator.pop(context);
                     },
-                    controller: _giftNameController,
+                    child: const Text('Cancel', style: TextStyle(color: Colors.white)),
                   ),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                        hintText: "Enter the Description"),
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.trim().length < 3) {
-                        return ("Check the Description please");
-                      }
-                      return null;
-                    },
-                    controller: _giftDescriptionController,
-                  ),
-                  TextFormField(
-                    decoration:
-                    const InputDecoration(hintText: "Enter the Price"),
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.trim().length > 50) {
-                        return ("Check the Price please");
-                      }
-                      return null;
-                    },
-                    controller: _giftPriceController,
-                  ),
-                  TextFormField(
-                    decoration:
-                    const InputDecoration(hintText: "Enter the Category"),
-                    validator: (value) {
-                      if (value == null ||
-                          value.isEmpty ||
-                          value.trim().length < 3 ||
-                          value.trim().length > 50) {
-                        return ("Check the Category please");
-                      }
-                      return null;
-                    },
-                    controller: _giftCategoryController,
-                  ),
-                  TextFormField(
-                    decoration:
-                    const InputDecoration(hintText: "Enter the Gift Pic"),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return ("Check the Pic please");
-                      }
-                      return null;
-                    },
-                    controller: _giftPicController,
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-
-                          if (keyAddGift.currentState!.validate()) {
-                            try {
-                              int response = await mydb.insertData(
-                                  '''INSERT INTO Gifts (Name, Description, Category, Price, GiftPic,EventID) 
-  VALUES ("${_giftNameController.text}", "${_giftDescriptionController.text}", "${_giftCategoryController.text}", "${_giftPriceController.text}", "${_giftPicController.text}" ,${widget.event.ID})''');
-
-                              if (response > 0) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          UserGiftListPage(event: widget.event)),
-                                );
-                                _giftNameController.clear();
-                                _giftDescriptionController.clear();
-                                _giftCategoryController.clear();
-                                _giftPriceController.clear();
-                                _giftPicController.clear();
-                              } else {
-                                print("Insert failed");
-                              }
-                            } catch (e) {
-                              print("Error inserting data: $e");
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue),
-                        child: const Text(
-                          "Save",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    onPressed: saveGift,
+                    child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
                   ),
                 ],
-              )),
-        ));
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

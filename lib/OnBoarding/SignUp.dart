@@ -289,6 +289,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               _profilePicController.text,
                             );
                             if (status) {
+                              await myAuth.saveUserData(_nameController.text, _emailController.text);
                               Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 '/Home',

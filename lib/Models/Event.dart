@@ -8,6 +8,8 @@ class Events {
   final String status;
   final List<Gift> gifts; // List of gifts associated with the event
   int ID;
+  String? FireStoreID;
+
 
   Events({
     required this.name,
@@ -16,6 +18,7 @@ class Events {
     required this.Description,
     required this.ID,
     required this.status,
+    this.FireStoreID,
     this.gifts = const [],
   });
 }

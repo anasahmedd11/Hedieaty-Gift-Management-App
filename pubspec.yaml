@@ -43,6 +43,8 @@ dependencies:
   awesome_dialog: ^3.2.1
   animate_do: ^3.3.4
   transparent_image: ^2.0.1
+  flutter_contacts: ^1.1.9+2
+  cloud_firestore: ^5.5.0
 
 dev_dependencies:
   flutter_test:

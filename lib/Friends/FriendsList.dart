@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hedieaty_project/Authentication/AuthUser.dart';
@@ -6,6 +9,7 @@ import 'package:hedieaty_project/Events/EventList.dart';
 import 'package:hedieaty_project/Models/User.dart';
 import 'package:hedieaty_project/Profile/ProfilePage.dart';
 import 'package:hedieaty_project/User/AddUserEvent.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -34,7 +38,6 @@ Widget Badge(int count) {
 
 class _HomePageState extends State<HomePage> {
   DataBaseClass mydb = DataBaseClass();
-  final myAuth = AuthUser();
   List<Map<String, dynamic>> retrievedData = [];
 
   @override
@@ -44,29 +47,22 @@ class _HomePageState extends State<HomePage> {
     _loadData();
   }
 
-  Future<void> _loadData({String? query}) async {
-    setState(() {});
-    String sqlQuery =
-        "SELECT Users.ID, Users.Name, Users.Email, Users.PhoneNumber,Users.ProfilePic, COUNT(Events.ID) as event_count "
-        "FROM Users LEFT JOIN Events ON Users.ID = Events.UserID "
-        "GROUP BY Users.ID";
-    if (query != null && query.isNotEmpty) {
-      sqlQuery =
-      "SELECT Users.ID, Users.Name, Users.Email, Users.PhoneNumber,Users.ProfilePic, COUNT(Events.ID) as event_count "
-          "FROM Users LEFT JOIN Events ON Users.ID = Events.UserID "
-          "WHERE Users.Name LIKE '%$query%' "
-          "GROUP BY Users.ID";
-    }
-    var data = await mydb.readData(sqlQuery);
-    setState(() {
-      retrievedData = data;
-    });
-  }
-
-  // Method to handle the search input
   void _onSearchChanged(String query) {
     _loadData(query: query);
   }
+
+  void _navigateToEventsPage(Userr friend) {
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => EventListPage(friend: friend),
+    //   ),
+    // );
+    _loadData();
+  }
+
+  final myAuth = AuthUser();
+
 
   void _showAddFriendOptions(BuildContext context) {
     showModalBottomSheet(
@@ -76,16 +72,19 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-                leading: const Icon(Icons.phone),
-                title: const Text('Add Manually'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/Add');
-                  _loadData();
-                }),
+              leading: const Icon(Icons.phone),
+              title: const Text('Add Manually'),
+              onTap: () {
+                Navigator.pushNamed(context, '/Add');
+                _loadData();
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.contacts),
               title: const Text('Add from Contacts'),
-              onTap: () {},
+              onTap: () {
+                pickContact();
+              },
             ),
           ],
         );
@@ -93,14 +92,100 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _navigateToEventsPage(User friend) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventListPage(friend: friend),
-      ),
-    );
-    _loadData();
+
+  Future<void> _loadData({String? query}) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception("No user logged in");
+
+    String loggedInUserID = user.uid;
+
+    String sqlQuery =
+        "SELECT Users.ID, Users.Name, Users.Email, Users.PhoneNumber, Users.ProfilePic, COUNT(Events.ID) as event_count "
+        "FROM Users LEFT JOIN Events ON Users.ID = Events.UserID "
+        "WHERE Users.LinkedUserID = '$loggedInUserID' "
+        "GROUP BY Users.ID";
+
+    if (query != null && query.isNotEmpty) {
+      sqlQuery =
+      "SELECT Users.ID, Users.Name, Users.Email, Users.PhoneNumber, Users.ProfilePic, COUNT(Events.ID) as event_count "
+          "FROM Users LEFT JOIN Events ON Users.ID = Events.UserID "
+          "WHERE Users.LinkedUserID = '$loggedInUserID' AND Users.Name LIKE '%$query%' "
+          "GROUP BY Users.ID";
+    }
+
+    var data = await mydb.readData(sqlQuery);
+    setState(() {
+      retrievedData = data;
+    });
+  }
+
+
+  Future<void> addContactToFirestore(Map<String, dynamic> friendData) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        DocumentReference docRef = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user.uid)
+            .collection('Friends')
+            .add(friendData);
+
+        // Update local database with Firestore ID
+        String firestoreID = docRef.id;
+        String updateQuery =
+            "UPDATE Users SET FireStoreID = '$firestoreID' WHERE ID = ${friendData['LocalDBID']}";
+        await mydb.updateData(updateQuery);
+      } catch (e) {
+        print("Error adding contact to Firestore: $e");
+      }
+    }
+  }
+
+  Future<void> addContactToDatabase(Contact contact) async {
+    try {
+      String name = contact.displayName;
+      String email = contact.emails.isNotEmpty ? contact.emails.first.address : '';
+      String profilePic = contact.photo != null ? base64Encode(contact.photo!) : '';
+      String phoneNumber = contact.phones.isNotEmpty ? contact.phones.first.number : '';
+
+      String insertQuery = '''
+      INSERT INTO Users (Name, Email, ProfilePic, PhoneNumber,)
+      VALUES ("$name", "$email", "$profilePic", "$phoneNumber",)
+      ''';
+
+      // Insert contact data into the local database
+      int localDBID = await mydb.insertData(insertQuery);
+
+      // Add the contact to Firestore
+      await addContactToFirestore({
+        'Name': name,
+        'Email': email,
+        'ProfilePic': profilePic,
+        'PhoneNumber': phoneNumber,
+        'LocalDBID': localDBID,
+      });
+
+      // Refresh the UI
+      _loadData();
+    } catch (e) {
+      print("Error inserting contact into database: $e");
+    }
+  }
+
+  Future<void> pickContact() async {
+    try {
+      if (await FlutterContacts.requestPermission()) {
+        final contact = await FlutterContacts.openExternalPick();
+
+        if (contact != null) {
+          await addContactToDatabase(contact);
+        }
+      } else {
+        print("Permission denied");
+      }
+    } catch (e) {
+      print("Error picking contact: $e");
+    }
   }
 
   @override
@@ -180,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                 : ListView.builder(
                 itemCount: retrievedData.length,
                 itemBuilder: (context, index) {
-                  var userPassedData = User(
+                  var userPassedData = Userr(
                     name: retrievedData[index]['Name'],
                     email: retrievedData[index]['Email'],
                     ID: retrievedData[index]['ID'],

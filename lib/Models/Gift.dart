@@ -4,9 +4,11 @@ class Gift {
   bool isLocked;
   final String imageUrl;
   final String Description;
-  final String Price;
+  final double Price;
   final int ID;
   bool isPledged;
+  String? FireStoreID;
+  final String? eventFirestoreID;
 
   Gift({
     required this.name,
@@ -17,6 +19,8 @@ class Gift {
     required this.Price,
     required this.ID,
     this.isPledged = false,
+    this.FireStoreID,
+    this.eventFirestoreID,
   });
 
 

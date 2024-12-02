@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:hedieaty_project/Database/DatabaseClass.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hedieaty_project/Models/Event.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hedieaty_project/Database/DatabaseClass.dart';
 
 class EditEvent extends StatefulWidget {
-  const EditEvent({required this.event, required this.onEventUpdated,super.key});
-
   final Events event;
   final void Function() onEventUpdated;
+
+  const EditEvent({required this.event, required this.onEventUpdated, super.key});
+
   @override
-  State<EditEvent> createState() => _EditEventState();
+  _EditEventState createState() => _EditEventState();
 }
 
 class _EditEventState extends State<EditEvent> {
@@ -37,22 +40,63 @@ class _EditEventState extends State<EditEvent> {
     super.dispose();
   }
 
-  Future<void> _updateEventData() async {
+  Future<void> _editEventData() async {
     if (_formKey.currentState!.validate()) {
       try {
-        String sqlQuery = '''
-          UPDATE Events 
-          SET Name = "${_editNameController.text}",
-              Date = "${_editDateController.text}",
-              Location = "${_editLocationController.text}",
-              Description = "${_editDescriptionController.text}"
-          WHERE ID = ${widget.event.ID}
-        ''';
+        String updatedName = _editNameController.text;
+        String updatedDate = _editDateController.text;
+        String updatedLocation = _editLocationController.text;
+        String updatedDescription = _editDescriptionController.text;
 
+        // Check if the event exists in the local database before updating
+        String selectQuery = '''
+      SELECT * FROM Events WHERE FireStoreID = "${widget.event.FireStoreID}"
+      ''';
+        var result = await _mydb.readData(selectQuery);
+        if (result.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Event not found in the local database.")),
+          );
+          return;
+        }
+
+        // Update local database
+        String sqlQuery = '''
+      UPDATE Events 
+      SET Name = "$updatedName",
+          Date = "$updatedDate",
+          Location = "$updatedLocation",
+          Description = "$updatedDescription"
+      WHERE FireStoreID = "${widget.event.FireStoreID}"
+      ''';
         int response = await _mydb.updateData(sqlQuery);
 
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          try {
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .doc(user.uid)
+                .collection('Events')
+                .doc(widget.event.FireStoreID)
+                .update({
+              'Name': updatedName,
+              'Date': updatedDate,
+              'Location': updatedLocation,
+              'Description': updatedDescription,
+            });
+            print("Firestore update successful");
+          } catch (error) {
+            print("Error updating Firestore: $error");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Error updating FireStore: $error")),
+            );
+          }
+        }
+
         if (response > 0) {
-          Navigator.pop(context, true); // Return to the previous page
+          widget.onEventUpdated(); // Refresh events list
+          Navigator.pop(context, true);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Failed to update the event.")),
@@ -71,7 +115,7 @@ class _EditEventState extends State<EditEvent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Event",style: TextStyle(color: Colors.white),),
+        title: const Text("Edit Event", style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue,
       ),
@@ -133,13 +177,13 @@ class _EditEventState extends State<EditEvent> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Cancel',style: TextStyle(color: Colors.white),),
+                    child: const Text('Cancel', style: TextStyle(color: Colors.white)),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: _updateEventData,
-                    child: const Text('Save Changes',style: TextStyle(color: Colors.white)),
+                    onPressed: _editEventData,
+                    child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

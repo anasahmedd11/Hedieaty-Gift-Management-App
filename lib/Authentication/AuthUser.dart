@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 class AuthUser {
   sign_in(emailAddress, password) async {
     try {
@@ -14,6 +14,18 @@ class AuthUser {
         print('Wrong password provided for that user.');
       }
       return false;
+    }
+  }
+
+  Future<void> saveUserData(String name, String email) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+      FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'name': name,
+        'email': email,
+      });
     }
   }
 
@@ -61,7 +73,6 @@ class AuthUser {
       return false;
     }
   }
-
 
   sign_out() async {
     await FirebaseAuth.instance.signOut();

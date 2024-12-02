@@ -17,7 +17,7 @@ class DataBaseClass {
 
   Future<Database> initialize() async {
     String myPath = await getDatabasesPath();
-    String path = join(myPath, 'HedieatyProjectv16.db');
+    String path = join(myPath, 'HedieatyProjectv27.db');
 
     Database mydb = await openDatabase(path, version: 1, readOnly: false,onCreate: (db, version) async {
       // Create Users table
@@ -28,6 +28,8 @@ class DataBaseClass {
         Email TEXT NOT NULL,
         ProfilePic TEXT NOT NULL,
         PhoneNumber INTEGER NOT NULL,
+        FireStoreID TEXT,
+        LinkedUserID TEXT
         Preferences TEXT
       )
     ''');
@@ -42,6 +44,7 @@ class DataBaseClass {
         Status TEXT,
         Description TEXT,
         UserID INTEGER,
+        FireStoreID TEXT,
         FOREIGN KEY(UserID) REFERENCES Users(ID)
       )
     ''');
@@ -59,6 +62,7 @@ class DataBaseClass {
         isLocked INTEGER,
         isPledged INTEGER DEFAULT 0,
         EventID INTEGER,
+        FireStoreID TEXT,
         FOREIGN KEY(EventID) REFERENCES Events(ID) 
       )
     ''');
