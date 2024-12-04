@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:hedieaty_project/Authentication/AuthUser.dart';
+import 'package:hedieaty_project/Friends/FriendsList.dart';
 import 'package:hedieaty_project/OnBoarding/ResetPassword.dart';
 import 'package:hedieaty_project/OnBoarding/SignUp.dart';
 
@@ -60,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           const Text("New to this app? ",
                               style:
-                              TextStyle(color: Colors.white, fontSize: 18)),
+                                  TextStyle(color: Colors.white, fontSize: 18)),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -108,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               boxShadow: [
                                 BoxShadow(
                                   color:
-                                  const Color.fromRGBO(173, 216, 230, 0.3),
+                                      const Color.fromRGBO(173, 216, 230, 0.3),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -201,8 +202,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _emailController.text,
                                   _passwordController.text);
                               if (status == true) {
-                                Navigator.pushReplacementNamed(
-                                    context, '/Home');
+                                Navigator.pushReplacement(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                        secondaryAnimation) {
+                                      return HomePage();
+                                    },
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      var scaleTween =
+                                          Tween(begin: 0.0, end: 1.0).chain(
+                                              CurveTween(
+                                                  curve: Curves.easeInOut));
+                                      var scaleAnimation =
+                                          animation.drive(scaleTween);
+                                      return ScaleTransition(
+                                          scale: scaleAnimation, child: child);
+                                    },
+                                    transitionDuration: Duration(milliseconds: 700),
+                                  ),
+                                );
                               } else {
                                 AwesomeDialog(
                                   context: context,
@@ -252,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: ElevatedButton.icon(
                                 onPressed: () async {
                                   bool isSignedIn =
-                                  await myAuth.signInWithGoogle();
+                                      await myAuth.signInWithGoogle();
                                   if (isSignedIn) {
                                     Navigator.pushReplacementNamed(
                                         context, '/Home');
@@ -263,8 +283,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 "Google sign-in was canceled or failed")));
                                   }
                                 },
-                                icon:
-                                const Icon(Icons.g_mobiledata_outlined, size: 25),
+                                icon: const Icon(Icons.g_mobiledata_outlined,
+                                    size: 25),
                                 label: const Text('Google',
                                     style: TextStyle(
                                         fontSize: 19,

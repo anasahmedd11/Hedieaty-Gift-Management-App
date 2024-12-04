@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hedieaty_project/Profile/EditProfile.dart';
 import 'package:hedieaty_project/User/UserEvents.dart';
 
@@ -26,12 +27,26 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToEditProfile() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => UpdateProfilePage(),
+    await Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return UpdateProfilePage();
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          // Customize duration
+          var tween = Tween(begin: 0.0, end: 1.0)
+              .chain(CurveTween(curve: Curves.easeInOut));
+          var scaleAnimation = animation.drive(tween);
+
+          return ScaleTransition(
+            scale: scaleAnimation,
+            child: FadeTransition(opacity: animation, child: child),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 500),
       ),
     );
-    // After returning, reload the user data to reflect changes
     _reloadUser();
   }
 
@@ -50,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Card(
             elevation: 5,
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -58,9 +73,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   user?.photoURL != null
                       ? CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(user!.photoURL!),
-                  )
+                          radius: 50,
+                          backgroundImage: NetworkImage(user!.photoURL!),
+                        )
                       : const Icon(Icons.account_circle, size: 50),
                   const SizedBox(height: 10),
                   Text(
@@ -76,10 +91,24 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(fontSize: 19),
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: _navigateToEditProfile,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    child: const Text('Edit Profile',style: TextStyle(color: Colors.white),),
+                  Animate(
+                    effects: [
+                      SlideEffect(
+                        begin: Offset(2, 0),
+                        end: Offset.zero,
+                        duration: 1000.ms,
+                        curve: Curves.easeInOut,
+                      ),
+                    ],
+                    child: ElevatedButton(
+                      onPressed: _navigateToEditProfile,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
+                      child: const Text(
+                        'Edit Profile',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -88,25 +117,50 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 20),
           InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserEvents()));
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) {
+                    return UserEvents();
+                  },
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    var offsetTween =
+                        Tween(begin: Offset(1.0, 0.0), end: Offset.zero);
+                    var offsetAnimation = animation.drive(offsetTween);
+                    return SlideTransition(
+                        position: offsetAnimation, child: child);
+                  },
+                  transitionDuration: Duration(milliseconds: 500),
+                ),
+              );
             },
             child: Card(
               elevation: 5,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'My Created Events',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Icon(Icons.arrow_forward),
+                    Animate(effects: [
+                      SlideEffect(
+                        begin: Offset(2, 2),
+                        // first value represents x, second represents y
+                        end: Offset.zero,
+                        // Slide to the original position
+                        duration: 900.ms,
+                        curve: Curves.easeInOut,
+                      ),
+                    ], child: Icon(Icons.arrow_forward)),
                   ],
                 ),
               ),
@@ -114,9 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 20),
           InkWell(
-            onTap: () {
-
-            },
+            onTap: () {},
             child: Card(
               elevation: 5,
               shape: RoundedRectangleBorder(

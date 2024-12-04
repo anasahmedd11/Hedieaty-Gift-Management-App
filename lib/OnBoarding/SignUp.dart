@@ -5,6 +5,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:hedieaty_project/Authentication/AuthUser.dart';
 import 'package:hedieaty_project/OnBoarding/Login.dart';
 
+import '../Friends/FriendsList.dart';
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -290,9 +292,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             );
                             if (status) {
                               await myAuth.saveUserData(_nameController.text, _emailController.text);
-                              Navigator.pushNamedAndRemoveUntil(
+                              Navigator.pushAndRemoveUntil(
                                 context,
-                                '/Home',
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                      secondaryAnimation) {
+                                    return HomePage();
+                                  },
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    var scaleTween =
+                                    Tween(begin: 0.0, end: 1.0).chain(
+                                        CurveTween(
+                                            curve: Curves.easeInOut));
+                                    var scaleAnimation =
+                                    animation.drive(scaleTween);
+                                    return ScaleTransition(
+                                        scale: scaleAnimation, child: child);
+                                  },
+                                  transitionDuration: Duration(milliseconds: 700),
+                                ),
                                     (Route<dynamic> route) => false,
                               );
                             } else {

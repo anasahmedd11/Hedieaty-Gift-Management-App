@@ -94,8 +94,8 @@ class _NewGiftState extends State<NewGift> {
           "Add New Gift",
           style: TextStyle(color: Colors.white),
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -104,30 +104,37 @@ class _NewGiftState extends State<NewGift> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Gift Name'),
+                decoration: const InputDecoration(labelText: 'Enter the Name'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a gift name';
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length < 2 ||
+                      value.trim().length > 50) {
+                    return 'Please enter a valid gift name (min 2 characters).';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Enter the Description'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length < 3 ||
+                      value.trim().length > 50) {
+                    return 'Please enter a valid gift description (min 3 characters).';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _categoryController,
-                decoration: const InputDecoration(labelText: 'Category'),
+                decoration: const InputDecoration(labelText: 'Enter the Category'),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a category';
+                  if (value == null || value.isEmpty||value.trim().length < 3 ||
+                      value.trim().length > 50) {
+                    return 'Please enter a valid gift category (min 3 characters).';
                   }
                   return null;
                 },
@@ -135,19 +142,19 @@ class _NewGiftState extends State<NewGift> {
               TextFormField(
                 controller: _priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Enter the Price (\$)'),
                 validator: (value) {
                   if (value == null ||
                       double.tryParse(value) == null ||
                       double.parse(value) <= 0) {
-                    return 'Please enter a valid price';
+                    return 'Gift price can\'t be negative or 0';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _imageController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
+                decoration: const InputDecoration(labelText: 'Enter the Image URL'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an image URL';

@@ -42,16 +42,20 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     FadeInUp(
                       duration: const Duration(milliseconds: 1000),
                       child: const Text("Forgot your Password?",
-                          style: TextStyle(color: Colors.white, fontSize: 33, fontWeight: FontWeight.bold)),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 33,
+                              fontWeight: FontWeight.bold)),
                     ),
                     const SizedBox(height: 10),
                     FadeInUp(
                       duration: const Duration(milliseconds: 1300),
                       child: Row(
                         children: [
-                          const Text("No problem, just enter your Email Address",
-                              style: TextStyle(color: Colors.white, fontSize: 18)),
-
+                          const Text(
+                              "No problem, just enter your Email Address",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18)),
                         ],
                       ),
                     ),
@@ -82,7 +86,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color.fromRGBO(173, 216, 230, 0.3),
+                                  color:
+                                      const Color.fromRGBO(173, 216, 230, 0.3),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -93,7 +98,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey.shade200)),
                                   ),
                                   child: TextFormField(
                                     controller: _emailController,
@@ -106,7 +113,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                       if (value == null || value.isEmpty) {
                                         return 'Please enter your email';
                                       }
-                                      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                                      final emailRegex = RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                                       if (!emailRegex.hasMatch(value)) {
                                         return 'Please enter a valid email';
                                       }
@@ -114,13 +122,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                     },
                                   ),
                                 ),
-
                               ],
                             ),
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 28),
                       FadeInUp(
                         duration: const Duration(milliseconds: 1600),
@@ -128,8 +134,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (context) => LoginScreen()),
-                                      (route) => false);
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()),
+                                  (route) => false);
                             }
                           },
                           height: 50,
@@ -145,7 +152,45 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           ),
                         ),
                       ),
-
+                      const SizedBox(height: 28),
+                      FadeInUp(
+                        duration: const Duration(milliseconds: 1600),
+                        child: MaterialButton(
+                          onPressed: () {
+                            Navigator.pop(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) {
+                                  return LoginScreen();
+                                },
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  var scaleTween = Tween(begin: 0.0, end: 1.0)
+                                      .chain(
+                                          CurveTween(curve: Curves.easeInOut));
+                                  var scaleAnimation =
+                                      animation.drive(scaleTween);
+                                  return ScaleTransition(
+                                      scale: scaleAnimation, child: child);
+                                },
+                                transitionDuration: Duration(milliseconds: 500),
+                              ),
+                            );
+                          },
+                          height: 50,
+                          color: Colors.lightBlue.shade700,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: const Center(
+                            child: Text("Go back to login",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

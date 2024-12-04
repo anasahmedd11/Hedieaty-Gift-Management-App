@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class UpdateProfilePage extends StatefulWidget {
   const UpdateProfilePage({Key? key}) : super(key: key);
@@ -23,7 +26,6 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
         await user?.updatePhotoURL(_photoUrlController.text);
       }
 
-      // Reload user to fetch updated profile info
       await FirebaseAuth.instance.currentUser?.reload();
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,17 +84,26 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                     controller: _photoUrlController,
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (keyProfile.currentState!.validate()) {
-                        await _updateUserProfile();
-                        Navigator.pop(context);
-                      }
-                    },
-                    style:
-                    ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    child: const Text('Update Profile',
-                        style: TextStyle(color: Colors.white)),
+                  Animate(
+                    effects: [
+                      RotateEffect(
+                        begin: 1* pi, // Full 180° rotation
+                        end: 0.0, // Start with no rotation
+                        duration: 600.milliseconds,
+                      ),
+                    ],
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (keyProfile.currentState!.validate()) {
+                          await _updateUserProfile();
+                          Navigator.pop(context);
+                        }
+                      },
+                      style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      child: const Text('Update Profile',
+                          style: TextStyle(color: Colors.white)),
+                    ),
                   ),
                 ],
               )),

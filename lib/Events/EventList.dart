@@ -165,7 +165,6 @@ class _EventListPageState extends State<EventListPage> {
               ];
             },
           )
-
         ],
       ),
       body: eventData.isEmpty

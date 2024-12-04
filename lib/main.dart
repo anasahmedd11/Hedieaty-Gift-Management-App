@@ -30,9 +30,9 @@ class App extends StatelessWidget {
       initialRoute:
       FirebaseAuth.instance.currentUser == null ? '/Sign_in' : '/Home',
       routes: {
-        '/Sign_in': (context) => LoginScreen(),
-        '/Home': (context) => HomePage(),
-        '/Add': (context) => AddUserScreen(),
+        '/Sign_in': (context) => const LoginScreen(),
+        '/Home': (context) => const HomePage(),
+        '/Add': (context) => const AddFriend(),
       },
     );
   }

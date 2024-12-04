@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hedieaty_project/Authentication/AuthUser.dart';
 import 'package:hedieaty_project/Database/DatabaseClass.dart';
+import 'package:hedieaty_project/Friends/AddFriendManually.dart';
 import 'package:hedieaty_project/Models/User.dart';
+import 'package:hedieaty_project/OnBoarding/Login.dart';
 import 'package:hedieaty_project/User/AddUserEvent.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import '../Events/EventList.dart';
@@ -53,7 +56,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _navigateToEventsPage(Userr friend) {
-
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -77,7 +79,23 @@ class _HomePageState extends State<HomePage> {
               leading: const Icon(Icons.phone),
               title: const Text('Add Manually'),
               onTap: () {
-                Navigator.pushNamed(context, '/Add');
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) {
+                      return AddFriend();
+                    },
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      var scaleTween = Tween(begin: 0.0, end: 1.0)
+                          .chain(CurveTween(curve: Curves.easeInOut));
+                      var scaleAnimation = animation.drive(scaleTween);
+                      return ScaleTransition(
+                          scale: scaleAnimation, child: child);
+                    },
+                    transitionDuration: Duration(milliseconds: 500),
+                  ),
+                );
                 _loadData();
               },
             ),
@@ -142,7 +160,8 @@ class _HomePageState extends State<HomePage> {
 
         await _loadData();
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error adding contact!')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Error adding contact!')));
       }
     }
   }
@@ -173,7 +192,8 @@ class _HomePageState extends State<HomePage> {
 
       await _loadData();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error adding contact!')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error adding contact!')));
     }
   }
 
@@ -186,13 +206,13 @@ class _HomePageState extends State<HomePage> {
           await addContactToDatabase(contact);
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Permission denied')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Permission denied')));
       }
     } catch (e) {
       print("Error picking contact: $e");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -223,20 +243,45 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddUserEvent(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: const Text(
-                  'Create Your Own Event/List.',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+              child: Animate(
+                effects: [
+                  FadeEffect(
+                    begin: 0.0, // Start fully transparent
+                    end: 1.0, // Fade to fully opaque
+                    duration: 1500.milliseconds,
+                  ),
+                ],
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) {
+                          return AddUserEvent();
+                        },
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          var tween = Tween(begin: 0.0, end: 1.0)
+                              .chain(CurveTween(curve: Curves.easeInOut));
+                          var scaleAnimation = animation.drive(tween);
+
+                          return ScaleTransition(
+                            scale: scaleAnimation,
+                            child: FadeTransition(
+                                opacity: animation, child: child),
+                          );
+                        },
+                        transitionDuration: Duration(
+                            milliseconds: 500), // Set your custom duration here
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  child: const Text(
+                    'Create Your Own Event/List.',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ),
@@ -346,14 +391,24 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showAddFriendOptions(context);
-        },
-        backgroundColor: Colors.blue,
-        child: const Icon(
-          Icons.person_add,
-          color: Colors.white,
+      floatingActionButton: Animate(
+        effects: [
+        ScaleEffect(
+          begin: Offset(0.5, 0.5), // Start at half size
+          end: Offset(1, 1),   // Grow to full size
+          duration: 600.ms,
+          curve: Curves.easeInOut,
+        ),
+        ],
+        child: FloatingActionButton(
+          onPressed: () {
+            _showAddFriendOptions(context);
+          },
+          backgroundColor: Colors.blue,
+          child: const Icon(
+            Icons.person_add,
+            color: Colors.white,
+          ),
         ),
       ),
       drawer: Drawer(
@@ -389,46 +444,95 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            ListTile(
-              leading: const Icon(
-                Icons.person,
-                size: 26,
-                color: Colors.blue,
+            Animate(
+              effects: [
+                SlideEffect(
+                  begin: Offset(1, 0), // first value represents x, second represents y
+                  end: Offset.zero,    // Slide to the original position
+                  duration: 400.ms,
+                  curve: Curves.easeInOut,
+                ),
+              ],
+              child: ListTile(
+                leading: const Icon(
+                  Icons.person,
+                  size: 26,
+                  color: Colors.blue,
+                ),
+                title: Text(
+                  'Profile',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return ProfilePage();
+                      },
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var offsetTween = Tween(
+                            begin: const Offset(1.0, 1.0),
+                            end: Offset.zero); // Slide from the right
+                        var offsetAnimation = animation.drive(offsetTween);
+                        return SlideTransition(
+                            position: offsetAnimation, child: child);
+                      },
+                      transitionDuration: const Duration(milliseconds: 500),
+                    ),
+                  );
+                },
               ),
-              title: Text(
-                'Profile',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()));
-              },
             ),
-            ListTile(
-              leading: const Icon(
-                Icons.logout,
-                size: 26,
-                color: Colors.blue,
+            Animate(
+              effects: [
+                SlideEffect(
+                  begin: Offset(1, 0), // first value represents x, second represents y
+                  end: Offset.zero,    // Slide to the original position
+                  duration: 400.ms,
+                  curve: Curves.easeInOut,
+                ),
+              ],
+              child: ListTile(
+                leading: const Icon(
+                  Icons.logout,
+                  size: 26,
+                  color: Colors.blue,
+                ),
+                title: Text(
+                  'Logout',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                onTap: () async {
+                  await myAuth.sign_out();
+                  final googleSignIn = GoogleSignIn();
+                  googleSignIn.disconnect();
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return LoginScreen();
+                      },
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var scaleTween = Tween(begin: 0.0, end: 1.0)
+                            .chain(CurveTween(curve: Curves.easeInOut));
+                        var scaleAnimation = animation.drive(scaleTween);
+                        return ScaleTransition(
+                            scale: scaleAnimation, child: child);
+                      },
+                      transitionDuration: Duration(milliseconds: 500),
+                    ),
+                  );
+                },
               ),
-              title: Text(
-                'Logout',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onTap: () async {
-                await myAuth.sign_out();
-                final googleSignIn = GoogleSignIn();
-                googleSignIn.disconnect();
-                Navigator.pushReplacementNamed(
-                  context,
-                  '/Sign_in',
-                );
-              },
             )
           ],
         ),

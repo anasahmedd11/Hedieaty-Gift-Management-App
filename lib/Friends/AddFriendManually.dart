@@ -2,15 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hedieaty_project/Database/DatabaseClass.dart';
+import 'package:hedieaty_project/Friends/FriendsList.dart';
 
-class AddUserScreen extends StatefulWidget {
-  const AddUserScreen({super.key});
+class AddFriend extends StatefulWidget {
+  const AddFriend({super.key});
 
   @override
-  State<AddUserScreen> createState() => _AddState();
+  State<AddFriend> createState() => _AddState();
 }
 
-class _AddState extends State<AddUserScreen> {
+class _AddState extends State<AddFriend> {
   DataBaseClass mydb = DataBaseClass();
   final GlobalKey<FormState> Mykey = GlobalKey<FormState>();
   TextEditingController Name = TextEditingController();
@@ -29,14 +30,12 @@ class _AddState extends State<AddUserScreen> {
 
     if (user != null) {
       try {
-        // Add the friend to the logged-in user's Firestore collection
         DocumentReference docRef = await FirebaseFirestore.instance
             .collection('Users')
             .doc(user.uid)
             .collection('Friends')
             .add(friendData);
 
-        // Update the local database with the Firestore ID
         String firestoreID = docRef.id;
         String updateQuery =
             "UPDATE Users SET FireStoreID = '$firestoreID' WHERE ID = $localDBID";
@@ -61,7 +60,6 @@ class _AddState extends State<AddUserScreen> {
 
         String loggedInUserID = user.uid;
 
-        // Insert into the local database with LinkedUserID
         int localDBID = await mydb.insertData(
             '''
         INSERT INTO Users (Name, Email, ProfilePic, PhoneNumber, LinkedUserID) 
@@ -69,7 +67,6 @@ class _AddState extends State<AddUserScreen> {
         '''
         );
 
-        // Add to Firestore as before
         await addFriendToFirestore(
           {
             'Name': name,
@@ -81,7 +78,20 @@ class _AddState extends State<AddUserScreen> {
           localDBID,
         );
 
-        Navigator.pushNamedAndRemoveUntil(context, '/Home', (route) => false);
+        Navigator.pushReplacement(context,  PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return HomePage();
+          },
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) {
+            var scaleTween = Tween(begin: 0.0, end: 1.0)
+                .chain(CurveTween(curve: Curves.easeInOut));
+            var scaleAnimation = animation.drive(scaleTween);
+            return ScaleTransition(
+                scale: scaleAnimation, child: child);
+          },
+          transitionDuration: Duration(milliseconds: 500),
+        ),);
       } catch (e) {
         print("Error saving user: $e");
       }
@@ -115,9 +125,8 @@ class _AddState extends State<AddUserScreen> {
                 validator: (value) {
                   if (value == null ||
                       value.isEmpty ||
-                      value.trim().length < 3 ||
                       value.trim().length > 50) {
-                    return "Check the name please";
+                    return "Please enter a valid name (max 50 characters).";
                   }
                   return null;
                 },
@@ -126,8 +135,8 @@ class _AddState extends State<AddUserScreen> {
               TextFormField(
                 decoration: const InputDecoration(hintText: "Enter the Phone Number"),
                 validator: (value) {
-                  if (value == null || value.isEmpty || value.length < 10) {
-                    return "Please enter a valid phone number";
+                  if (value == null || value.isEmpty || value.length!= 12) {
+                    return "Please enter a valid phone number (e.g., 201012345678)";
                   }
                   return null;
                 },
@@ -142,7 +151,7 @@ class _AddState extends State<AddUserScreen> {
                   final emailRegex =
                   RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                   if (!emailRegex.hasMatch(value)) {
-                    return 'Please enter a valid email';
+                    return 'Email must include an "@" symbol and a domain name.';
                   }
                   return null;
                 },

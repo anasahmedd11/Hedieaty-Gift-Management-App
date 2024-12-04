@@ -123,6 +123,7 @@ class _AddUserEventState extends State<AddUserEvent> {
           "Add New Event",
           style: TextStyle(color: Colors.white),
         ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -134,28 +135,62 @@ class _AddUserEventState extends State<AddUserEvent> {
                 decoration: const InputDecoration(hintText: "Enter the Name"),
                 controller: _nameController,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter an event name";
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length < 3 ||
+                      value.trim().length > 50) {
+                    return "Please enter a valid event name (min 3 characters).";
                   }
                   return null;
                 },
               ),
               TextFormField(
-                decoration: const InputDecoration(hintText: "Enter the Date"),
+                decoration: const InputDecoration(hintText: "Enter the Date (DD-MM-YYYY)"),
                 controller: _dateController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter the event date";
                   }
-                  return null;
+                  //^(0[1-9]|[12][0-9]|3[01]): ensures that day is between 01 and 31.
+                  // -(0[1-9]|1[0-2]): ensures that  month is between 01 and 12.
+                  // -\d{4}$: ensures that year consists of 4-digits).
+                  RegExp dateRegExp = RegExp(r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$');
+
+                  // Check if the input matches the DD-MM-YYYY format
+                  if (!dateRegExp.hasMatch(value)) {
+                    return "Please enter a valid date in DD-MM-YYYY format";
+                  }
+
+                  // Split the input into day, month, and year
+                  List<String> dateParts = value.split('-');
+                  int day = int.parse(dateParts[0]);
+                  int month = int.parse(dateParts[1]);
+                  int year = int.parse(dateParts[2]);
+
+                  // Check if the date is valid
+                  try {
+                    DateTime date = DateTime(year, month, day);
+                    // Check if the day is valid for the given month and year
+                    if (date.month == month && date.day == day) {
+                      return null;  // Valid date
+                    } else {
+                      return "Please enter a valid date";
+                    }
+                  } catch (e) {
+                    return "Please enter a valid date";
+                  }
                 },
               ),
+
               TextFormField(
                 decoration: const InputDecoration(hintText: "Enter the Location"),
                 controller: _locationController,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter the location";
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length < 3 ||
+                      value.trim().length > 50) {
+                    return "Please check the location";
                   }
                   return null;
                 },
@@ -164,8 +199,11 @@ class _AddUserEventState extends State<AddUserEvent> {
                 decoration: const InputDecoration(hintText: "Enter the Description"),
                 controller: _descriptionController,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter the event description";
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length < 3 ||
+                      value.trim().length > 50) {
+                    return "Please enter a valid gift name (min 3 characters).";
                   }
                   return null;
                 },
@@ -174,8 +212,9 @@ class _AddUserEventState extends State<AddUserEvent> {
                 decoration: const InputDecoration(hintText: "Enter the Status (Upcoming/ Current/ Past)"),
                 controller: _statusController,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter the event status";
+                  if (value == null || value.isEmpty|| value.trim().length < 4 ||
+                      value.trim().length > 8) {
+                    return "Enter one of these values only (Upcoming/ Current/ Past)";
                   }
                   return null;
                 },
