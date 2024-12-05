@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -135,8 +136,11 @@ class _UserEventsState extends State<UserEvents> {
     List<Map<String, dynamic>> sortedEvents = getSortedEvents();
     return Scaffold(
       appBar: AppBar(
-        title: Text('${user?.displayName}\'s Events',
-            style: const TextStyle(color: Colors.white)),
+        title: FadeInUp(
+          duration: const Duration(milliseconds: 1000),
+          child: Text('${user?.displayName}\'s Events',
+              style: const TextStyle(color: Colors.white)),
+        ),
         backgroundColor: Colors.blue,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
@@ -213,78 +217,89 @@ class _UserEventsState extends State<UserEvents> {
                       ),
                     );
                   },
-                  child: Card(
-                    color: Colors.blue,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 15),
-                    child: ListTile(
-                      title: Text(
-                        event.name,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                  child: Animate(
+                    effects: [
+                      SlideEffect(
+                        begin: Offset(2, 0),
+                        // first value represents x, second represents y
+                        end: Offset.zero,
+                        duration: 900.ms,
+                        curve: Curves.easeInOut,
                       ),
-                      subtitle: Text(
-                        '${event.Location} - ${event.Date} - ${event.status}',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Animate(
-                            effects: [
-                              BlurEffect(
-                                end: Offset(0.0, 0.0),
-                                begin: Offset(3.0, 3.0),
-                                duration: 500.ms,
+                    ],
+                    child: Card(
+                      color: Colors.blue,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 15),
+                      child: ListTile(
+                        title: Text(
+                          event.name,
+                          style: const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          '${event.Location} - ${event.Date} - ${event.status}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Animate(
+                              effects: [
+                                BlurEffect(
+                                  end: Offset(0.0, 0.0),
+                                  begin: Offset(3.0, 3.0),
+                                  duration: 500.ms,
+                                ),
+                              ],
+                              child: IconButton(
+                                icon: const Icon(Icons.edit, color: Colors.white),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      pageBuilder:
+                                          (context, animation, secondaryAnimation) {
+                                        return EditUserEvent(
+                                          event: event,
+                                          onEventUpdated: _loadEvents,
+                                        );
+                                      },
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        var offsetTween = Tween(
+                                            begin: Offset(1.0, 0.0),
+                                            end: Offset.zero);
+                                        var offsetAnimation =
+                                            animation.drive(offsetTween);
+                                        return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child);
+                                      },
+                                      transitionDuration:
+                                          Duration(milliseconds: 500),
+                                    ),
+                                  );
+                                },
                               ),
-                            ],
-                            child: IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.white),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder:
-                                        (context, animation, secondaryAnimation) {
-                                      return EditUserEvent(
-                                        event: event,
-                                        onEventUpdated: _loadEvents,
-                                      );
-                                    },
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      var offsetTween = Tween(
-                                          begin: Offset(1.0, 0.0),
-                                          end: Offset.zero);
-                                      var offsetAnimation =
-                                          animation.drive(offsetTween);
-                                      return SlideTransition(
-                                          position: offsetAnimation,
-                                          child: child);
-                                    },
-                                    transitionDuration:
-                                        Duration(milliseconds: 500),
-                                  ),
-                                );
-                              },
                             ),
-                          ),
-                          Animate(
-                            effects: [
-                              BlurEffect(
-                                end: Offset(0.0, 0.0),
-                                begin: Offset(3.0, 3.0),
-                                duration: 500.ms,
+                            Animate(
+                              effects: [
+                                BlurEffect(
+                                  end: Offset(0.0, 0.0),
+                                  begin: Offset(3.0, 3.0),
+                                  duration: 500.ms,
+                                ),
+                              ],
+                              child: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.white),
+                                onPressed: () {
+                                  _deleteEvent(event.FireStoreID!);
+                                },
                               ),
-                            ],
-                            child: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.white),
-                              onPressed: () {
-                                _deleteEvent(event.FireStoreID!);
-                              },
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

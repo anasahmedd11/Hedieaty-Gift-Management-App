@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -128,9 +129,12 @@ class _UserGiftListPageState extends State<UserGiftListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text(
-          '${widget.event.name} Gifts',
-          style: TextStyle(color: Colors.white),
+        title: FadeInUp(
+          duration: const Duration(milliseconds: 1000),
+          child: Text(
+            '${widget.event.name} Gifts',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
@@ -190,164 +194,174 @@ class _UserGiftListPageState extends State<UserGiftListPage> {
               itemCount: sortedGifts.length,
               itemBuilder: (context, index) {
                 final gift = sortedGifts[index];
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7)),
-                  clipBehavior: Clip.hardEdge,
-                  elevation: 2,
-                  child: Stack(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (context) => UserGiftDetailsPage(
-                              gift: Gift(
-                                ID: int.tryParse(gift['ID'].toString()) ?? 0,
-                                name: gift['Name'],
-                                category: gift['Category'],
-                                Description: gift['Description'],
-                                Price:
-                                    double.tryParse(gift['Price'].toString()) ??
-                                        0.0,
-                                imageUrl: gift['GiftPic'],
-                                FireStoreID: gift['ID'],
-                                eventFirestoreID: widget.event.FireStoreID!,
+                return Animate(
+                  effects: [
+                    SlideEffect(
+                      begin: Offset(0, 2), // first value represents x, second represents y
+                      end: Offset.zero,    // Slide to the original position
+                      duration: 900.ms,
+                      curve: Curves.easeInOut,
+                    ),
+                  ],
+                  child: Card(
+                    margin: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7)),
+                    clipBehavior: Clip.hardEdge,
+                    elevation: 2,
+                    child: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (context) => UserGiftDetailsPage(
+                                gift: Gift(
+                                  ID: int.tryParse(gift['ID'].toString()) ?? 0,
+                                  name: gift['Name'],
+                                  category: gift['Category'],
+                                  Description: gift['Description'],
+                                  Price:
+                                      double.tryParse(gift['Price'].toString()) ??
+                                          0.0,
+                                  imageUrl: gift['GiftPic'],
+                                  FireStoreID: gift['ID'],
+                                  eventFirestoreID: widget.event.FireStoreID!,
+                                ),
                               ),
+                            );
+                          },
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                            child: FadeInImage(
+                              placeholder: MemoryImage(kTransparentImage),
+                              image: NetworkImage(gift['GiftPic']),
+                              fit: BoxFit.fill,
+                              width: double.infinity,
+                              height: 250,
                             ),
-                          );
-                        },
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                          child: FadeInImage(
-                            placeholder: MemoryImage(kTransparentImage),
-                            image: NetworkImage(gift['GiftPic']),
-                            fit: BoxFit.fill,
-                            width: double.infinity,
-                            height: 250,
                           ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: Colors.black87,
-                          child: Column(
-                            children: [
-                              Text(
-                                gift['Name'],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            color: Colors.black87,
+                            child: Column(
+                              children: [
+                                Text(
+                                  gift['Name'],
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 7),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Animate(
-                                      effects: [
-                                        BlurEffect(
-                                          end: Offset(0.0, 0.0),
-                                          begin: Offset(3.0, 3.0),
-                                          duration: 500.ms,
-                                        ),
-                                      ],
-                                      child: IconButton(
-                                        onPressed: () {
-                                          _deleteGift(gift['ID']);
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
-                                          color: Colors.white,
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 7),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Animate(
+                                        effects: [
+                                          BlurEffect(
+                                            end: Offset(0.0, 0.0),
+                                            begin: Offset(3.0, 3.0),
+                                            duration: 500.ms,
+                                          ),
+                                        ],
+                                        child: IconButton(
+                                          onPressed: () {
+                                            _deleteGift(gift['ID']);
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Animate(
-                                      effects: [
-                                        BlurEffect(
-                                          end: Offset(0.0, 0.0),
-                                          begin: Offset(3.0, 3.0),
-                                          duration: 500.ms,
-                                        ),
-                                      ],
-                                      child: IconButton(
-                                        onPressed: () async {
-                                          final result = await Navigator.push(
-                                            context,
-                                            PageRouteBuilder(
-                                                pageBuilder: (context, animation,
-                                                    secondaryAnimation) {
-                                                  return EditUserGift(
-                                                    gift: Gift(
-                                                      ID: int.tryParse(gift['ID']
-                                                              .toString()) ??
-                                                          0,
-                                                      name: gift['Name'],
-                                                      category: gift['Category'],
-                                                      Description:
-                                                          gift['Description'],
-                                                      Price: double.tryParse(
-                                                              gift['Price']
-                                                                  .toString()) ??
-                                                          0.0,
-                                                      imageUrl: gift['GiftPic'],
-                                                      FireStoreID: gift['ID'],
-                                                      eventFirestoreID: widget
-                                                          .event.FireStoreID!,
-                                                    ),
-                                                    onGiftUpdated: _loadGifts,
-                                                  );
-                                                },
-                                                transitionsBuilder: (context,
-                                                    animation,
-                                                    secondaryAnimation,
-                                                    child) {
-                                                  // Customize duration
-                                                  var tween =
-                                                      Tween(begin: 0.0, end: 1.0)
-                                                          .chain(CurveTween(
-                                                              curve: Curves
-                                                                  .easeInOut));
-                                                  var scaleAnimation =
-                                                      animation.drive(tween);
+                                      Animate(
+                                        effects: [
+                                          BlurEffect(
+                                            end: Offset(0.0, 0.0),
+                                            begin: Offset(3.0, 3.0),
+                                            duration: 500.ms,
+                                          ),
+                                        ],
+                                        child: IconButton(
+                                          onPressed: () async {
+                                            final result = await Navigator.push(
+                                              context,
+                                              PageRouteBuilder(
+                                                  pageBuilder: (context, animation,
+                                                      secondaryAnimation) {
+                                                    return EditUserGift(
+                                                      gift: Gift(
+                                                        ID: int.tryParse(gift['ID']
+                                                                .toString()) ??
+                                                            0,
+                                                        name: gift['Name'],
+                                                        category: gift['Category'],
+                                                        Description:
+                                                            gift['Description'],
+                                                        Price: double.tryParse(
+                                                                gift['Price']
+                                                                    .toString()) ??
+                                                            0.0,
+                                                        imageUrl: gift['GiftPic'],
+                                                        FireStoreID: gift['ID'],
+                                                        eventFirestoreID: widget
+                                                            .event.FireStoreID!,
+                                                      ),
+                                                      onGiftUpdated: _loadGifts,
+                                                    );
+                                                  },
+                                                  transitionsBuilder: (context,
+                                                      animation,
+                                                      secondaryAnimation,
+                                                      child) {
+                                                    // Customize duration
+                                                    var tween =
+                                                        Tween(begin: 0.0, end: 1.0)
+                                                            .chain(CurveTween(
+                                                                curve: Curves
+                                                                    .easeInOut));
+                                                    var scaleAnimation =
+                                                        animation.drive(tween);
 
-                                                  return ScaleTransition(
-                                                    scale: scaleAnimation,
-                                                    child: FadeTransition(
-                                                        opacity: animation,
-                                                        child: child),
-                                                  );
-                                                },
-                                                transitionDuration:
-                                                    const Duration(
-                                                        milliseconds: 600)),
-                                          );
-                                          if (result == true) _loadGifts();
-                                        },
-                                        icon: const Icon(Icons.edit,
-                                            color: Colors.white),
+                                                    return ScaleTransition(
+                                                      scale: scaleAnimation,
+                                                      child: FadeTransition(
+                                                          opacity: animation,
+                                                          child: child),
+                                                    );
+                                                  },
+                                                  transitionDuration:
+                                                      const Duration(
+                                                          milliseconds: 600)),
+                                            );
+                                            if (result == true) _loadGifts();
+                                          },
+                                          icon: const Icon(Icons.edit,
+                                              color: Colors.white),
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                  ],
+                                      const SizedBox(width: 10),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },

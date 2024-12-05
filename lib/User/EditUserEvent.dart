@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hedieaty_project/Models/Event.dart';
@@ -8,7 +9,8 @@ class EditUserEvent extends StatefulWidget {
   final Events event;
   final void Function() onEventUpdated;
 
-  const EditUserEvent({required this.event, required this.onEventUpdated, super.key});
+  const EditUserEvent(
+      {required this.event, required this.onEventUpdated, super.key});
 
   @override
   _EditEventState createState() => _EditEventState();
@@ -55,7 +57,8 @@ class _EditEventState extends State<EditUserEvent> {
         var result = await _mydb.readData(selectQuery);
         if (result.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Event not found in the local database.")),
+            const SnackBar(
+                content: Text("Event not found in the local database.")),
           );
           return;
         }
@@ -115,7 +118,10 @@ class _EditEventState extends State<EditUserEvent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Event", style: TextStyle(color: Colors.white)),
+        title: FadeInUp(
+            duration: const Duration(milliseconds: 1000),
+            child: const Text("Edit Event",
+                style: TextStyle(color: Colors.white))),
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue,
       ),
@@ -129,7 +135,9 @@ class _EditEventState extends State<EditUserEvent> {
                 controller: _editNameController,
                 decoration: const InputDecoration(labelText: 'Event Name'),
                 validator: (value) {
-                  if (value == null || value.isEmpty || value.trim().length < 3||
+                  if (value == null ||
+                      value.isEmpty ||
+                      value.trim().length < 3 ||
                       value.trim().length > 50) {
                     return 'Please enter a valid event name (min 3 characters).';
                   }
@@ -147,7 +155,8 @@ class _EditEventState extends State<EditUserEvent> {
                   //^(0[1-9]|[12][0-9]|3[01]): ensures that day is between 01 and 31.
                   // -(0[1-9]|1[0-2]): ensures that  month is between 01 and 12.
                   // -\d{4}$: ensures that year consists of 4-digits).
-                  RegExp dateRegExp = RegExp(r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$');
+                  RegExp dateRegExp = RegExp(
+                      r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$');
 
                   // Check if the input matches the DD-MM-YYYY format
                   if (!dateRegExp.hasMatch(value)) {
@@ -165,7 +174,7 @@ class _EditEventState extends State<EditUserEvent> {
                     DateTime date = DateTime(year, month, day);
                     // Check if the day is valid for the given month and year
                     if (date.month == month && date.day == day) {
-                      return null;  // Valid date
+                      return null; // Valid date
                     } else {
                       return "Please enter a valid date";
                     }
@@ -189,7 +198,8 @@ class _EditEventState extends State<EditUserEvent> {
                 },
               ),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Event Description'),
+                decoration:
+                    const InputDecoration(labelText: 'Event Description'),
                 controller: _editDescriptionController,
                 validator: (value) {
                   if (value == null ||
@@ -206,17 +216,21 @@ class _EditEventState extends State<EditUserEvent> {
                 children: [
                   const Spacer(),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+                    child: const Text('Cancel',
+                        style: TextStyle(color: Colors.white)),
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: _editEventData,
-                    child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
+                    child: const Text('Save Changes',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

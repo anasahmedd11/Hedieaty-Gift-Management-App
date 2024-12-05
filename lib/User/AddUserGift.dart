@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -90,9 +91,12 @@ class _NewGiftState extends State<NewGift> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Text(
-          "Add New Gift",
-          style: TextStyle(color: Colors.white),
+        title: FadeInUp(
+          duration: const Duration(milliseconds: 1000),
+          child: const Text(
+            "Add New Gift",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),

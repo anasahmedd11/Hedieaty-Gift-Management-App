@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -105,12 +106,15 @@ class _AddState extends State<AddFriend> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          "Add New Friend",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+        title:  FadeInUp(
+          duration: const Duration(milliseconds: 1000),
+          child: const Text(
+            "Add New Friend",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

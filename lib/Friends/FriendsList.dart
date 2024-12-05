@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:hedieaty_project/Models/User.dart';
 import 'package:hedieaty_project/OnBoarding/Login.dart';
 import 'package:hedieaty_project/User/AddUserEvent.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
-import '../Events/EventList.dart';
+import 'FriendsEventList.dart';
 import '../Profile/ProfilePage.dart';
 
 class HomePage extends StatefulWidget {
@@ -55,15 +56,16 @@ class _HomePageState extends State<HomePage> {
     _loadData(query: query);
   }
 
-  void _navigateToEventsPage(Userr friend) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EventListPage(friend: friend),
-      ),
-    );
-
-    _loadData();
+  // FireStore listener for retrieving and displaying event count in real-time
+  Stream<int> _getEventCountStream(String friendFirestoreID) {
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('Friends')
+        .doc(friendFirestoreID)
+        .collection('Events')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length); // Count number of events
   }
 
   final myAuth = AuthUser();
@@ -221,22 +223,16 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.blue,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          'Hedieaty',
-          style: Theme.of(context)
-              .textTheme
-              .headlineLarge!
-              .copyWith(color: Colors.white),
+        title: FadeInUp(
+          duration: const Duration(milliseconds: 1000),
+          child: Text(
+            'Hedieaty',
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge!
+                .copyWith(color: Colors.white),
+          ),
         ),
-        actions: [
-          IconButton(
-            onPressed: _loadData,
-            icon: const Icon(
-              Icons.refresh,
-              color: Colors.white,
-            ),
-          )
-        ],
       ),
       body: Column(
         children: [
@@ -314,78 +310,140 @@ class _HomePageState extends State<HomePage> {
                     itemCount: retrievedData.length,
                     itemBuilder: (context, index) {
                       var userPassedData = Userr(
-                        name: retrievedData[index]['Name'],
-                        email: retrievedData[index]['Email'],
-                        ID: retrievedData[index]['ID'],
-                        profileImageUrl: retrievedData[index]['ProfilePic'],
-                        PhoneNumber:
-                            retrievedData[index]['PhoneNumber'].toString(),
-                      );
+                          name: retrievedData[index]['Name'],
+                          email: retrievedData[index]['Email'],
+                          ID: retrievedData[index]['ID'],
+                          profileImageUrl: retrievedData[index]['ProfilePic'],
+                          PhoneNumber:
+                              retrievedData[index]['PhoneNumber'].toString(),
+                          FirestoreID: retrievedData[index]['FireStoreID']);
                       int eventCount = retrievedData[index]['event_count'];
                       String? firestoreID = retrievedData[index]['FireStoreID'];
-                      return Card(
-                        color: Colors.blue,
-                        child: ListTile(
-                          title: Text(
-                            '${retrievedData[index]['Name']}',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            '${retrievedData[index]['PhoneNumber']}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                '${retrievedData[index]['ProfilePic']}'),
-                          ),
-                          onTap: () {
-                            _navigateToEventsPage(userPassedData);
-                          },
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Badge(eventCount),
-                              IconButton(
-                                icon: const Icon(Icons.delete,
-                                    color: Colors.white),
-                                onPressed: () async {
-                                  try {
-                                    final user =
-                                        FirebaseAuth.instance.currentUser;
-                                    if (user != null && firestoreID != null) {
-                                      await FirebaseFirestore.instance
-                                          .collection('Users')
-                                          .doc(user.uid)
-                                          .collection('Friends')
-                                          .doc(firestoreID)
-                                          .delete();
-                                    }
-                                    int response = await mydb.deleteData(
-                                        "DELETE FROM Users WHERE ID = ${retrievedData[index]['ID']}");
-                                    if (response > 0) {
-                                      _loadData();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Friend deleted successfully')),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content:
-                                              Text('Failed to delete friend.')),
-                                    );
-                                  }
-                                },
+                      return StreamBuilder<int>(
+                          stream: _getEventCountStream(firestoreID!),
+                          builder: (context, snapshot) {
+                            // if (snapshot.connectionState ==
+                            //     ConnectionState.waiting) {
+                            //   return const CircularProgressIndicator();
+                            // }
+                            int eventCount = snapshot.data ?? 0;
+
+                            return Animate(
+                              effects: [
+                                SlideEffect(
+                                  begin: Offset(0, 2),
+                                  // first value represents x, second represents y
+                                  end: Offset.zero,
+                                  // Slide to the original position
+                                  duration: 900.ms,
+                                  curve: Curves.easeInOut,
+                                ),
+                              ],
+                              child: Card(
+                                color: Colors.blue,
+                                child: ListTile(
+                                  title: Text(
+                                    '${retrievedData[index]['Name']}',
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Text(
+                                    '${retrievedData[index]['PhoneNumber']}',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        '${retrievedData[index]['ProfilePic']}'),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                              secondaryAnimation) {
+                                            return EventListPage(
+                                                friend: userPassedData);
+                                          },
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            // Customize duration
+                                            var tween = Tween(
+                                                    begin: 0.0, end: 1.0)
+                                                .chain(CurveTween(
+                                                    curve: Curves.easeInOut));
+                                            var scaleAnimation =
+                                                animation.drive(tween);
+
+                                            return ScaleTransition(
+                                              scale: scaleAnimation,
+                                              child: FadeTransition(
+                                                  opacity: animation,
+                                                  child: child),
+                                            );
+                                          },
+                                          transitionDuration:
+                                              const Duration(milliseconds: 700),
+                                        ));
+                                  },
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Animate(
+                                        effects: [
+                                          ShakeEffect(
+                                            offset: Offset(10, 0), // Horizontal shake
+                                            duration: 500.ms,
+                                            curve: Curves.elasticInOut,
+                                          ),
+                                        ],
+                                        child: Badge(eventCount),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.white),
+                                        onPressed: () async {
+                                          try {
+                                            final user = FirebaseAuth
+                                                .instance.currentUser;
+                                            if (user != null &&
+                                                firestoreID != null) {
+                                              await FirebaseFirestore.instance
+                                                  .collection('Users')
+                                                  .doc(user.uid)
+                                                  .collection('Friends')
+                                                  .doc(firestoreID)
+                                                  .delete();
+                                            }
+                                            int response = await mydb.deleteData(
+                                                "DELETE FROM Users WHERE ID = ${retrievedData[index]['ID']}");
+                                            if (response > 0) {
+                                              _loadData();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        'Friend deleted successfully')),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                  content: Text(
+                                                      'Failed to delete friend.')),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      );
+                            );
+                          });
                     },
                   ),
           ),
@@ -393,12 +451,12 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: Animate(
         effects: [
-        ScaleEffect(
-          begin: Offset(0.5, 0.5), // Start at half size
-          end: Offset(1, 1),   // Grow to full size
-          duration: 600.ms,
-          curve: Curves.easeInOut,
-        ),
+          ScaleEffect(
+            begin: Offset(0.5, 0.5), // Start at half size
+            end: Offset(1, 1), // Grow to full size
+            duration: 600.ms,
+            curve: Curves.easeInOut,
+          ),
         ],
         child: FloatingActionButton(
           onPressed: () {
@@ -415,40 +473,52 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
         child: Column(
           children: [
-            DrawerHeader(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Colors.white,
-                      Colors.blue,
-                    ]),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.card_giftcard_outlined,
-                    size: 48,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  const SizedBox(width: 18),
-                  Text(
-                    'Hedieaty',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(color: Colors.white),
-                  ),
-                ],
+            Animate(
+              effects: [
+                SlideEffect(
+                  begin: Offset(2, 0), // first value represents x, second represents y
+                  end: Offset.zero,    // Slide to the original position
+                  duration: 400.ms,
+                  curve: Curves.easeInOut,
+                ),
+              ],
+              child: DrawerHeader(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white,
+                        Colors.blue,
+                      ]),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.card_giftcard_outlined,
+                      size: 48,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 18),
+                    Text(
+                      'Hedieaty',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
             ),
             Animate(
               effects: [
                 SlideEffect(
-                  begin: Offset(1, 0), // first value represents x, second represents y
-                  end: Offset.zero,    // Slide to the original position
+                  begin: Offset(1, 0),
+                  // first value represents x, second represents y
+                  end: Offset.zero,
+                  // Slide to the original position
                   duration: 400.ms,
                   curve: Curves.easeInOut,
                 ),
@@ -461,10 +531,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text(
                   'Profile',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
                 ),
                 onTap: () {
                   Navigator.push(
@@ -477,7 +545,7 @@ class _HomePageState extends State<HomePage> {
                           (context, animation, secondaryAnimation, child) {
                         var offsetTween = Tween(
                             begin: const Offset(1.0, 1.0),
-                            end: Offset.zero); // Slide from the right
+                            end: Offset.zero);
                         var offsetAnimation = animation.drive(offsetTween);
                         return SlideTransition(
                             position: offsetAnimation, child: child);
@@ -491,8 +559,10 @@ class _HomePageState extends State<HomePage> {
             Animate(
               effects: [
                 SlideEffect(
-                  begin: Offset(1, 0), // first value represents x, second represents y
-                  end: Offset.zero,    // Slide to the original position
+                  begin: Offset(1, 0),
+                  // first value represents x, second represents y
+                  end: Offset.zero,
+                  // Slide to the original position
                   duration: 400.ms,
                   curve: Curves.easeInOut,
                 ),
@@ -505,10 +575,8 @@ class _HomePageState extends State<HomePage> {
                 ),
                 title: Text(
                   'Logout',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(color: Colors.blue, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
                 ),
                 onTap: () async {
                   await myAuth.sign_out();

@@ -4,7 +4,8 @@ class Gift {
   bool isLocked;
   final String imageUrl;
   final String Description;
-  final double Price;
+  //changed from double to num to match FireStore
+  final num Price;
   final int ID;
   bool isPledged;
   String? FireStoreID;

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:hedieaty_project/Database/DatabaseClass.dart';
 import 'package:hedieaty_project/Models/Gift.dart';
@@ -124,7 +125,7 @@ class _EditGiftPageState extends State<EditUserGift> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Gift", style: TextStyle(color: Colors.white)),
+        title: FadeInUp(duration: const Duration(milliseconds: 1000),child: const Text("Edit Gift", style: TextStyle(color: Colors.white))),
         backgroundColor: Colors.blue,
         iconTheme: const IconThemeData(color: Colors.white),
       ),

@@ -62,55 +62,65 @@ class _ProfilePageState extends State<ProfilePage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            elevation: 5,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  user?.photoURL != null
-                      ? CircleAvatar(
-                          radius: 50,
-                          backgroundImage: NetworkImage(user!.photoURL!),
-                        )
-                      : const Icon(Icons.account_circle, size: 50),
-                  const SizedBox(height: 10),
-                  Text(
-                    user?.email ?? 'No email available',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    user?.displayName ?? 'No display name available',
-                    style: const TextStyle(fontSize: 19),
-                  ),
-                  const SizedBox(height: 10),
-                  Animate(
-                    effects: [
-                      SlideEffect(
-                        begin: Offset(2, 0),
-                        end: Offset.zero,
-                        duration: 1000.ms,
-                        curve: Curves.easeInOut,
-                      ),
-                    ],
-                    child: ElevatedButton(
-                      onPressed: _navigateToEditProfile,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue),
-                      child: const Text(
-                        'Edit Profile',
-                        style: TextStyle(color: Colors.white),
+          Animate(
+            effects: [
+              SlideEffect(
+                begin: Offset(2, 2), // first value represents x, second represents y
+                end: Offset.zero,    // Slide to the original position
+                duration: 800.ms,
+                curve: Curves.easeInOut,
+              ),
+            ],
+            child: Card(
+              elevation: 5,
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    user?.photoURL != null
+                        ? CircleAvatar(
+                            radius: 50,
+                            backgroundImage: NetworkImage(user!.photoURL!),
+                          )
+                        : const Icon(Icons.account_circle, size: 50),
+                    const SizedBox(height: 10),
+                    Text(
+                      user?.email ?? 'No email available',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    Text(
+                      user?.displayName ?? 'No display name available',
+                      style: const TextStyle(fontSize: 19),
+                    ),
+                    const SizedBox(height: 10),
+                    Animate(
+                      effects: [
+                        SlideEffect(
+                          begin: Offset(2, 0),
+                          end: Offset.zero,
+                          duration: 1000.ms,
+                          curve: Curves.easeInOut,
+                        ),
+                      ],
+                      child: ElevatedButton(
+                        onPressed: _navigateToEditProfile,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue),
+                        child: const Text(
+                          'Edit Profile',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -135,33 +145,43 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               );
             },
-            child: Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'My Created Events',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+            child: Animate(
+              effects: [
+                SlideEffect(
+                  begin: Offset(2, 2), // first value represents x, second represents y
+                  end: Offset.zero,    // Slide to the original position
+                  duration: 800.ms,
+                  curve: Curves.easeInOut,
+                ),
+              ],
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'My Created Events',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Animate(effects: [
-                      SlideEffect(
-                        begin: Offset(2, 2),
-                        // first value represents x, second represents y
-                        end: Offset.zero,
-                        // Slide to the original position
-                        duration: 900.ms,
-                        curve: Curves.easeInOut,
-                      ),
-                    ], child: Icon(Icons.arrow_forward)),
-                  ],
+                      Animate(effects: [
+                        SlideEffect(
+                          begin: Offset(2, 2),
+                          // first value represents x, second represents y
+                          end: Offset.zero,
+                          // Slide to the original position
+                          duration: 900.ms,
+                          curve: Curves.easeInOut,
+                        ),
+                      ], child: Icon(Icons.arrow_forward)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -169,24 +189,34 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 20),
           InkWell(
             onTap: () {},
-            child: Card(
-              elevation: 5,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'My Pledged Gifts',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+            child: Animate(
+              effects: [
+                SlideEffect(
+                  begin: Offset(2, 2), // first value represents x, second represents y
+                  end: Offset.zero,    // Slide to the original position
+                  duration: 800.ms,
+                  curve: Curves.easeInOut,
+                ),
+              ],
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'My Pledged Gifts',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Icon(Icons.arrow_forward),
-                  ],
+                      Icon(Icons.arrow_forward),
+                    ],
+                  ),
                 ),
               ),
             ),
