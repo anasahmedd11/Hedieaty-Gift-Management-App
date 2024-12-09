@@ -65,7 +65,9 @@ class _HomePageState extends State<HomePage> {
         .doc(friendFirestoreID)
         .collection('Events')
         .snapshots()
-        .map((snapshot) => snapshot.docs.length); // Count number of events
+        .map(
+          (snapshot) => snapshot.docs.length,
+        );
   }
 
   final myAuth = AuthUser();
@@ -120,27 +122,39 @@ class _HomePageState extends State<HomePage> {
 
     String loggedInUserID = user.uid;
 
-    String sqlQuery = '''
-    SELECT Users.ID, Users.Name, Users.Email, Users.PhoneNumber, Users.ProfilePic, Users.FireStoreID, COUNT(Events.ID) as event_count
-    FROM Users LEFT JOIN Events ON Users.ID = Events.UserID
-    WHERE Users.LinkedUserID = '$loggedInUserID'
-    GROUP BY Users.ID
-    ''';
+    try {
+      QuerySnapshot friendsSnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(loggedInUserID)
+          .collection('Friends')
+          .get();
 
-    if (query != null && query.isNotEmpty) {
-      sqlQuery = '''
-      SELECT Users.ID, Users.Name, Users.Email, Users.PhoneNumber, Users.ProfilePic, Users.FireStoreID, COUNT(Events.ID) as event_count
-      FROM Users LEFT JOIN Events ON Users.ID = Events.UserID
-      WHERE Users.LinkedUserID = '$loggedInUserID' AND Users.Name LIKE '%$query%'
-      GROUP BY Users.ID
-      ''';
+      // Convert the fetched data to a list of maps
+      List<Map<String, dynamic>> allFriends = friendsSnapshot.docs.map((doc) {
+        var data = doc.data() as Map<String, dynamic>;
+        return {
+          'Name': data['Name'] ?? 'No Name',
+          'Email': data['Email'] ?? 'No Email',
+          'PhoneNumber': data['PhoneNumber'] ?? 'No Phone Number',
+          'ProfilePic': data['ProfilePic'] ?? '',
+          'FireStoreID': doc.id,
+        };
+      }).toList();
+
+      // Filter friends based on the search query (case-insensitive)
+      if (query != null && query.isNotEmpty) {
+        String lowerCaseQuery = query.toLowerCase();
+        allFriends = allFriends.where((friend) {
+          return friend['Name'].toLowerCase().contains(lowerCaseQuery);
+        }).toList();
+      }
+
+      setState(() {
+        retrievedData = allFriends;
+      });
+    } catch (e) {
+      print("Error loading data from Firestore: $e");
     }
-
-    var data = await mydb.readData(sqlQuery);
-
-    setState(() {
-      retrievedData = data;
-    });
   }
 
   Future<void> addContactToFireStore(Map<String, dynamic> friendData) async {
@@ -267,8 +281,7 @@ class _HomePageState extends State<HomePage> {
                                 opacity: animation, child: child),
                           );
                         },
-                        transitionDuration: Duration(
-                            milliseconds: 500), // Set your custom duration here
+                        transitionDuration: const Duration(milliseconds: 500),
                       ),
                     );
                   },
@@ -312,22 +325,16 @@ class _HomePageState extends State<HomePage> {
                       var userPassedData = Userr(
                           name: retrievedData[index]['Name'],
                           email: retrievedData[index]['Email'],
-                          ID: retrievedData[index]['ID'],
+                          ID: retrievedData[index]['ID'] ?? 0,
                           profileImageUrl: retrievedData[index]['ProfilePic'],
                           PhoneNumber:
                               retrievedData[index]['PhoneNumber'].toString(),
                           FirestoreID: retrievedData[index]['FireStoreID']);
-                      int eventCount = retrievedData[index]['event_count'];
-                      String? firestoreID = retrievedData[index]['FireStoreID'];
                       return StreamBuilder<int>(
-                          stream: _getEventCountStream(firestoreID!),
+                          stream: _getEventCountStream(
+                              retrievedData[index]['FireStoreID']!),
                           builder: (context, snapshot) {
-                            // if (snapshot.connectionState ==
-                            //     ConnectionState.waiting) {
-                            //   return const CircularProgressIndicator();
-                            // }
                             int eventCount = snapshot.data ?? 0;
-
                             return Animate(
                               effects: [
                                 SlideEffect(
@@ -369,7 +376,6 @@ class _HomePageState extends State<HomePage> {
                                               animation,
                                               secondaryAnimation,
                                               child) {
-                                            // Customize duration
                                             var tween = Tween(
                                                     begin: 0.0, end: 1.0)
                                                 .chain(CurveTween(
@@ -394,7 +400,8 @@ class _HomePageState extends State<HomePage> {
                                       Animate(
                                         effects: [
                                           ShakeEffect(
-                                            offset: Offset(10, 0), // Horizontal shake
+                                            offset: Offset(
+                                                10, 0), // Horizontal shake
                                             duration: 500.ms,
                                             curve: Curves.elasticInOut,
                                           ),
@@ -409,29 +416,30 @@ class _HomePageState extends State<HomePage> {
                                             final user = FirebaseAuth
                                                 .instance.currentUser;
                                             if (user != null &&
-                                                firestoreID != null) {
+                                                retrievedData[index]
+                                                        ['FireStoreID'] !=
+                                                    null) {
                                               await FirebaseFirestore.instance
                                                   .collection('Users')
                                                   .doc(user.uid)
                                                   .collection('Friends')
-                                                  .doc(firestoreID)
+                                                  .doc(retrievedData[index]
+                                                      ['FireStoreID'])
                                                   .delete();
                                             }
-                                            int response = await mydb.deleteData(
-                                                "DELETE FROM Users WHERE ID = ${retrievedData[index]['ID']}");
-                                            if (response > 0) {
-                                              _loadData();
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text(
-                                                        'Friend deleted successfully')),
-                                              );
-                                            }
+                                            _loadData();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                  backgroundColor: Colors.blue,
+                                                  content: Text(
+                                                      'Friend deleted successfully')),
+                                            );
                                           } catch (e) {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               const SnackBar(
+                                                  backgroundColor: Colors.blue,
                                                   content: Text(
                                                       'Failed to delete friend.')),
                                             );
@@ -476,8 +484,10 @@ class _HomePageState extends State<HomePage> {
             Animate(
               effects: [
                 SlideEffect(
-                  begin: Offset(2, 0), // first value represents x, second represents y
-                  end: Offset.zero,    // Slide to the original position
+                  begin: Offset(2, 0),
+                  // first value represents x, second represents y
+                  end: Offset.zero,
+                  // Slide to the original position
                   duration: 400.ms,
                   curve: Curves.easeInOut,
                 ),
@@ -544,8 +554,7 @@ class _HomePageState extends State<HomePage> {
                       transitionsBuilder:
                           (context, animation, secondaryAnimation, child) {
                         var offsetTween = Tween(
-                            begin: const Offset(1.0, 1.0),
-                            end: Offset.zero);
+                            begin: const Offset(1.0, 1.0), end: Offset.zero);
                         var offsetAnimation = animation.drive(offsetTween);
                         return SlideTransition(
                             position: offsetAnimation, child: child);
