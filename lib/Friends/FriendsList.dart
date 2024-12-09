@@ -12,6 +12,7 @@ import 'package:hedieaty_project/Models/User.dart';
 import 'package:hedieaty_project/OnBoarding/Login.dart';
 import 'package:hedieaty_project/User/AddUserEvent.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import '../LocalNotifications.dart';
 import 'FriendsEventList.dart';
 import '../Profile/ProfilePage.dart';
 

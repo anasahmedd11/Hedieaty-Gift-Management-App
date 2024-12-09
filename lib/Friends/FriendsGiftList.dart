@@ -8,7 +8,7 @@ import 'package:hedieaty_project/Models/Event.dart';
 import 'package:hedieaty_project/Models/Gift.dart';
 import 'package:hedieaty_project/Friends/FriendGiftDetails.dart';
 import 'package:transparent_image/transparent_image.dart';
-
+import '../LocalNotifications.dart';
 import '../User/UserPledgedGiftsList.dart';
 import '../Models/User.dart';
 
@@ -33,6 +33,8 @@ class _GiftListPageState extends State<GiftListPage> {
     super.initState();
     _loadGifts();
   }
+
+  final user = FirebaseAuth.instance.currentUser;
 
   // Fetch gifts from Firestore for this event
   Future<void> _loadGifts() async {
@@ -111,6 +113,20 @@ class _GiftListPageState extends State<GiftListPage> {
         return _sortAscending
             ? a.Price.compareTo(b.Price)
             : b.Price.compareTo(a.Price);
+      }else if (_sortField == 'pledgeStatus') {
+        // Converting bool values to int for comparison
+        int pledgeStatusA = a.isPledged ? 1 : 0;
+        int pledgeStatusB = b.isPledged ? 1 : 0;
+        return _sortAscending
+            ? pledgeStatusA.compareTo(pledgeStatusB)
+            : pledgeStatusB.compareTo(pledgeStatusA);
+      }else if (_sortField == 'eventDate') {
+        DateTime eventDateA = DateTime.parse(widget.event.Date); // Assuming you store event date as a string
+        DateTime eventDateB = DateTime.parse(widget.event.Date);
+
+        return _sortAscending
+            ? eventDateA.compareTo(eventDateB)
+            : eventDateB.compareTo(eventDateA);
       }
       return 0;
     });
@@ -144,6 +160,8 @@ class _GiftListPageState extends State<GiftListPage> {
                 PopupMenuItem<String>(
                     value: 'category', child: Text('Sort by Category')),
                 PopupMenuItem<String>(
+                    value: 'pledgeStatus', child: Text('Sort by Pledge Status')),
+                PopupMenuItem<String>(
                     value: 'price', child: Text('Sort by Price')),
               ];
             },
@@ -166,14 +184,17 @@ class _GiftListPageState extends State<GiftListPage> {
                       child: Animate(
                         effects: [
                           SlideEffect(
-                            begin: Offset(0, 2), // first value represents x, second represents y
-                            end: Offset.zero,    // Slide to the original position
+                            begin: Offset(0, 2),
+                            // first value represents x, second represents y
+                            end: Offset.zero,
+                            // Slide to the original position
                             duration: 900.ms,
                             curve: Curves.easeInOut,
                           ),
                         ],
                         child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue),
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => PledgedGiftsPage(
@@ -189,7 +210,6 @@ class _GiftListPageState extends State<GiftListPage> {
                         ),
                       ),
                     ),
-
                     Expanded(
                       child: GridView.builder(
                         padding: const EdgeInsets.all(10),
@@ -207,8 +227,10 @@ class _GiftListPageState extends State<GiftListPage> {
                           return Animate(
                             effects: [
                               SlideEffect(
-                                begin: Offset(0, 2), // first value represents x, second represents y
-                                end: Offset.zero,    // Slide to the original position
+                                begin: Offset(0, 2),
+                                // first value represents x, second represents y
+                                end: Offset.zero,
+                                // Slide to the original position
                                 duration: 900.ms,
                                 curve: Curves.easeInOut,
                               ),
@@ -268,109 +290,88 @@ class _GiftListPageState extends State<GiftListPage> {
                                             ),
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 7),
+                                            padding: const EdgeInsets.symmetric(horizontal: 7),
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 const SizedBox(width: 10),
                                                 Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
+                                                  mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
                                                     ElevatedButton(
                                                       onPressed: () async {
                                                         try {
                                                           // Toggle the isPledged value
-                                                          bool newPledgeStatus =
-                                                              !gift.isPledged;
+                                                          bool newPledgeStatus = !gift.isPledged;
 
                                                           // Update the Firestore document
-                                                          await FirebaseFirestore
-                                                              .instance
+                                                          await FirebaseFirestore.instance
                                                               .collection('Users')
-                                                              .doc(FirebaseAuth
-                                                                  .instance
-                                                                  .currentUser!
-                                                                  .uid)
-                                                              .collection(
-                                                                  'Friends')
-                                                              .doc(widget.friend
-                                                                  .FirestoreID)
-                                                              .collection(
-                                                                  'Events')
-                                                              .doc(widget.event
-                                                                  .FireStoreID)
+                                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                                              .collection('Friends')
+                                                              .doc(widget.friend.FirestoreID)
+                                                              .collection('Events')
+                                                              .doc(widget.event.FireStoreID)
                                                               .collection('Gifts')
-                                                              .doc(gift
-                                                                  .FireStoreID)
+                                                              .doc(gift.FireStoreID)
                                                               .update({
-                                                            'isPledged':
-                                                                newPledgeStatus
-                                                                    ? 1
-                                                                    : 0
+                                                            'isPledged': newPledgeStatus ? 1 : 0,
                                                           });
 
                                                           // Update the local state
                                                           setState(() {
-                                                            gift.isPledged =
-                                                                newPledgeStatus;
+                                                            gift.isPledged = newPledgeStatus;
                                                           });
 
-                                                          // Show a success message
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
+                                                          // Show notification based on pledge status
+                                                          await NotificationService().showNotification(
+                                                            title: 'Gift Status Change',
+                                                            body: newPledgeStatus
+                                                                ? 'The gift has been pledged by ${user!.displayName}!'
+                                                                : 'The gift has been un-pledged!',
+                                                          );
+
+                                                          // Show feedback to the user
+                                                          ScaffoldMessenger.of(context).showSnackBar(
                                                             SnackBar(
+                                                              backgroundColor: Colors.blue,
                                                               content: Text(
-                                                                  newPledgeStatus
-                                                                      ? 'Gift pledged successfully!'
-                                                                      : 'Gift unPledged successfully!'),
+                                                                newPledgeStatus
+                                                                    ? 'Gift pledged successfully!'
+                                                                    : 'Gift un-pledged successfully!',
+                                                              ),
                                                             ),
                                                           );
                                                         } catch (e) {
                                                           // Handle errors
-                                                          print(
-                                                              "Error updating pledge status: $e");
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
+                                                          print("Error updating pledge status: $e");
+                                                          ScaffoldMessenger.of(context).showSnackBar(
                                                             const SnackBar(
-                                                                content: Text(
-                                                                    'Failed to update pledge status.')),
+                                                              backgroundColor: Colors.blue,
+                                                              content: Text('Failed to update pledge status.'),
+                                                            ),
                                                           );
                                                         }
                                                       },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            gift.isPledged
-                                                                ? Colors.red
-                                                                : Colors.blue,
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: gift.isPledged ? Colors.red : Colors.blue,
                                                       ),
                                                       child: Text(
-                                                        gift.isPledged
-                                                            ? 'Un-pledge'
-                                                            : 'Pledge',
+                                                        gift.isPledged ? 'Un-pledge' : 'Pledge',
                                                         style: const TextStyle(
                                                           color: Colors.white,
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                          fontWeight: FontWeight.bold,
                                                         ),
                                                       ),
                                                     ),
                                                     const SizedBox(width: 10),
                                                     Text(
                                                       gift.isPledged
-                                                          ? 'Pledged'
+                                                          ? 'Pledged by ${user!.displayName}'
                                                           : 'Available',
                                                       style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: gift.isPledged
-                                                            ? Colors.red
-                                                            : Colors.green,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: gift.isPledged ? Colors.red : Colors.green,
                                                       ),
                                                     ),
                                                   ],
@@ -378,6 +379,7 @@ class _GiftListPageState extends State<GiftListPage> {
                                               ],
                                             ),
                                           ),
+
                                         ],
                                       ),
                                     ),

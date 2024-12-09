@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:hedieaty_project/Profile/EditProfile.dart';
 import 'package:hedieaty_project/User/UserEvents.dart';
 
+import '../Models/Gift.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -13,6 +15,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
+  List<Gift> pledgedGifts = [];
 
   @override
   void initState() {
@@ -25,6 +28,8 @@ class _ProfilePageState extends State<ProfilePage> {
       user = FirebaseAuth.instance.currentUser;
     });
   }
+
+ 
 
   void _navigateToEditProfile() async {
     await Navigator.push(
@@ -55,8 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text('User\'s Profile',
-            style: TextStyle(color: Colors.white)),
+        title: Text('${user!.displayName!} \'s Profile',
+            style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue,
       ),
       body: ListView(

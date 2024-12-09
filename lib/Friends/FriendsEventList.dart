@@ -103,10 +103,10 @@ class _EventListPageState extends State<EventListPage> {
         return _sortAscending
             ? a['Name'].compareTo(b['Name'])
             : b['Name'].compareTo(a['Name']);
-      } else if (_sortField == 'category') {
+      } else if (_sortField == 'location') {
         // Ensure both categories are non-null or use a fallback value (e.g., empty string)
-        String categoryA = a['Category'] ?? '';
-        String categoryB = b['Category'] ?? '';
+        String categoryA = a['Location'] ?? '';
+        String categoryB = b['Location'] ?? '';
 
         return _sortAscending
             ? categoryA.compareTo(categoryB)
@@ -158,8 +158,8 @@ class _EventListPageState extends State<EventListPage> {
                   child: Text('Sort by Name'),
                 ),
                 PopupMenuItem<String>(
-                  value: 'category',
-                  child: Text('Sort by Category'),
+                  value: 'location',
+                  child: Text('Sort by Location'),
                 ),
                 PopupMenuItem<String>(
                   value: 'status',

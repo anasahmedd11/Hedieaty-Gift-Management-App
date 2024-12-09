@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:hedieaty_project/Friends/AddFriendManually.dart';
 import 'package:hedieaty_project/Friends/FriendsList.dart';
 import 'package:hedieaty_project/OnBoarding/Login.dart';
+import 'LocalNotifications.dart';
 import 'firebase_options.dart';
 
 final theme = ThemeData(
@@ -17,6 +18,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
+
   runApp(App());
 }
 
