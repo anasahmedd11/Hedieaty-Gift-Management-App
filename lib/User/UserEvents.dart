@@ -338,6 +338,7 @@ class _UserEventsState extends State<UserEvents> {
             );
           },
           backgroundColor: Colors.blue,
+          key: ValueKey('addUserEvent'),
           child: const Icon(
             Icons.add,
             color: Colors.white,

@@ -136,6 +136,7 @@ class _AddUserEventState extends State<AddUserEvent> {
           child: Column(
             children: [
               TextFormField(
+                key: const ValueKey('addUserEventNameTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Name"),
                 controller: _nameController,
                 validator: (value) {
@@ -149,6 +150,7 @@ class _AddUserEventState extends State<AddUserEvent> {
                 },
               ),
               TextFormField(
+                key: const ValueKey('addUserEventDateTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Date (DD-MM-YYYY)"),
                 controller: _dateController,
                 validator: (value) {
@@ -187,6 +189,7 @@ class _AddUserEventState extends State<AddUserEvent> {
               ),
 
               TextFormField(
+                key: const ValueKey('addUserEventLocationTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Location"),
                 controller: _locationController,
                 validator: (value) {
@@ -200,6 +203,7 @@ class _AddUserEventState extends State<AddUserEvent> {
                 },
               ),
               TextFormField(
+                key: const ValueKey('addUserEventDescriptionTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Description"),
                 controller: _descriptionController,
                 validator: (value) {
@@ -213,6 +217,7 @@ class _AddUserEventState extends State<AddUserEvent> {
                 },
               ),
               TextFormField(
+                key: const ValueKey('addUserEventStatusTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Status (Upcoming/ Current/ Past)"),
                 controller: _statusController,
                 validator: (value) {
@@ -236,6 +241,7 @@ class _AddUserEventState extends State<AddUserEvent> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
+                    key: const ValueKey('addUserEventSubmitButton'),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: _saveEvent,
                     child: const Text('Save Changes', style: TextStyle(color: Colors.white)),

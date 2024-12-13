@@ -125,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             color: Colors.grey.shade200)),
                                   ),
                                   child: TextFormField(
+                                    key: ValueKey('emailField'),
                                     controller: _emailController,
                                     decoration: const InputDecoration(
                                       hintText: "Email",
@@ -152,6 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             color: Colors.grey.shade200)),
                                   ),
                                   child: TextFormField(
+                                    key: ValueKey('passwordField'),
                                     controller: _passwordController,
                                     obscureText: true,
                                     decoration: const InputDecoration(
@@ -243,6 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
+                          key: ValueKey("loginButton"),
                           child: const Center(
                             child: Text("Login",
                                 style: TextStyle(

@@ -107,6 +107,7 @@ class _NewGiftState extends State<NewGift> {
           child: Column(
             children: [
               TextFormField(
+                key: ValueKey('addGiftNameTextFormField'),
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Enter the Name'),
                 validator: (value) {
@@ -120,6 +121,7 @@ class _NewGiftState extends State<NewGift> {
                 },
               ),
               TextFormField(
+                key: ValueKey('addGiftDescriptionTextFormField'),
                 controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Enter the Description'),
                 validator: (value) {
@@ -133,6 +135,7 @@ class _NewGiftState extends State<NewGift> {
                 },
               ),
               TextFormField(
+                key: ValueKey('addGiftCategoryTextFormField'),
                 controller: _categoryController,
                 decoration: const InputDecoration(labelText: 'Enter the Category'),
                 validator: (value) {
@@ -144,6 +147,7 @@ class _NewGiftState extends State<NewGift> {
                 },
               ),
               TextFormField(
+                key: ValueKey('addGiftPriceTextFormField'),
                 controller: _priceController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Enter the Price (\$)'),
@@ -157,6 +161,7 @@ class _NewGiftState extends State<NewGift> {
                 },
               ),
               TextFormField(
+                key: ValueKey('addGiftImageTextFormField'),
                 controller: _imageController,
                 decoration: const InputDecoration(labelText: 'Enter the Image URL'),
                 validator: (value) {
@@ -179,6 +184,7 @@ class _NewGiftState extends State<NewGift> {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
+                    key: const ValueKey('addUserGiftSubmitButton'),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     onPressed: saveGift,
                     child: const Text('Save Changes', style: TextStyle(color: Colors.white)),

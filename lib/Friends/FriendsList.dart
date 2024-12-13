@@ -287,6 +287,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  key: ValueKey('EventButtonn'),
                   child: const Text(
                     'Create Your Own Event/List.',
                     style: TextStyle(
