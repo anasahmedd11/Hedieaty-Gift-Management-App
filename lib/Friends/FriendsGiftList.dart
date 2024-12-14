@@ -203,6 +203,7 @@ class _GiftListPageState extends State<GiftListPage> {
                               ),
                             ));
                           },
+                          key: ValueKey('viewPledgedGiftsButton'),
                           child: const Text(
                             "View Pledged Gifts",
                             style: TextStyle(color: Colors.white),
@@ -327,8 +328,8 @@ class _GiftListPageState extends State<GiftListPage> {
                                                           await NotificationService().showNotification(
                                                             title: 'Gift Status Change',
                                                             body: newPledgeStatus
-                                                                ? 'The gift has been pledged by ${user!.displayName}!'
-                                                                : 'The gift has been un-pledged!',
+                                                                ? '${gift.name} gift has been pledged by ${user!.displayName}!'
+                                                                : '${gift.name} gift has been un-pledged!',
                                                           );
 
                                                           // Show feedback to the user
@@ -356,6 +357,7 @@ class _GiftListPageState extends State<GiftListPage> {
                                                       style: ElevatedButton.styleFrom(
                                                         backgroundColor: gift.isPledged ? Colors.red : Colors.blue,
                                                       ),
+                                                      key: ValueKey('pledgingGiftsButton'),
                                                       child: Text(
                                                         gift.isPledged ? 'Un-pledge' : 'Pledge',
                                                         style: const TextStyle(

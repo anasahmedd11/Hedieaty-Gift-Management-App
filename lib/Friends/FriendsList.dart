@@ -83,7 +83,9 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: const Icon(Icons.phone),
               title: const Text('Add Manually'),
+              key: ValueKey('addFriendManually'),
               onTap: () {
+                Navigator.pop(context); //close modal bottom sheet before navigating
                 Navigator.push(
                   context,
                   PageRouteBuilder(
@@ -107,7 +109,9 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: const Icon(Icons.contacts),
               title: const Text('Add from Contacts'),
+              key: ValueKey('addFriendFromContacts'),
               onTap: () {
+                Navigator.pop(context); //close modal bottom sheet before navigating
                 pickContact();
               },
             ),
@@ -287,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  key: ValueKey('EventButtonn'),
+                  key: ValueKey('EventButton'),
                   child: const Text(
                     'Create Your Own Event/List.',
                     style: TextStyle(
@@ -473,6 +477,7 @@ class _HomePageState extends State<HomePage> {
             _showAddFriendOptions(context);
           },
           backgroundColor: Colors.blue,
+          key: ValueKey('addFriendOptionsButton'),
           child: const Icon(
             Icons.person_add,
             color: Colors.white,

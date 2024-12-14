@@ -33,7 +33,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       theme: theme,
       initialRoute: '/Sign_in',
-      // FirebaseAuth.instance.currentUser == null ? '/Sign_in' : '/Home',
+      //FirebaseAuth.instance.currentUser == null ? '/Sign_in' : '/Home',
       routes: {
         '/Sign_in': (context) => const LoginScreen(),
         '/Home': (context) => const HomePage(),

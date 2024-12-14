@@ -125,6 +125,7 @@ class _AddState extends State<AddFriend> {
           child: Column(
             children: [
               TextFormField(
+                key: ValueKey('addFriendManuallyNameTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Name"),
                 validator: (value) {
                   if (value == null ||
@@ -137,6 +138,7 @@ class _AddState extends State<AddFriend> {
                 controller: Name,
               ),
               TextFormField(
+                key: ValueKey('addFriendManuallyPhoneTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Phone Number"),
                 validator: (value) {
                   if (value == null || value.isEmpty || value.length!= 12) {
@@ -147,6 +149,7 @@ class _AddState extends State<AddFriend> {
                 controller: PhoneNumber,
               ),
               TextFormField(
+                key: ValueKey('addFriendManuallyEmailTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Email"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -162,6 +165,7 @@ class _AddState extends State<AddFriend> {
                 controller: Email,
               ),
               TextFormField(
+                key: ValueKey('addFriendManuallyProfilePicTextFormField'),
                 decoration: const InputDecoration(hintText: "Enter the Profile Pic"),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -175,6 +179,7 @@ class _AddState extends State<AddFriend> {
               Row(
                 children: [
                   ElevatedButton(
+                    key: ValueKey('addFriendManuallySubmitButton'),
                     onPressed: saveUser,
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                     child: const Text(
