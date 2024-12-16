@@ -6,12 +6,12 @@ class Friend {
     required this.name,
     required this.profilePic,
     this.upcomingEvents = 0,
-    List<Events>? events, // Make it optional to initialize
-  }) : events = events ?? []; // Initialize to an empty list if null
+    List<Events>? events,
+  }) : events = events ?? [];
 
   final String id;
   final String name;
   final String profilePic;
-  int upcomingEvents; // Change to allow updates
-  List<Events> events; // List of events associated with the friend
+  int upcomingEvents;
+  List<Events> events;
 }

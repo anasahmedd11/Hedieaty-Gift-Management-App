@@ -192,8 +192,15 @@ class _EditGiftPageState extends State<EditUserGift> {
                 decoration: const InputDecoration(labelText: 'Image URL'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a valid image URL.';
+                    return "Enter the profile pic please";
                   }
+
+                  // Check if the entered value is a valid URL
+                  Uri? uri = Uri.tryParse(value);
+                  if (uri == null || !uri.hasAbsolutePath) {
+                    return "Enter a valid URL for the profile pic";
+                  }
+
                   return null;
                 },
               ),

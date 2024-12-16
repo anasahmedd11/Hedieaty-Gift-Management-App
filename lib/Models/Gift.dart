@@ -4,7 +4,6 @@ class Gift {
   bool isLocked;
   final String imageUrl;
   final String Description;
-  //changed from double to num to match FireStore
   final num Price;
   final int ID;
   bool isPledged;
@@ -24,8 +23,6 @@ class Gift {
     this.eventFirestoreID,
   });
 
-
-  // Computed status based on `isLocked` state
   String get status => isLocked ? 'Unpledged' : 'Pledged';
 }
 

@@ -171,6 +171,13 @@ class _AddState extends State<AddFriend> {
                   if (value == null || value.isEmpty) {
                     return "Enter the profile pic please";
                   }
+
+                  // Check if the entered value is a valid URL
+                  Uri? uri = Uri.tryParse(value);
+                  if (uri == null || !uri.hasAbsolutePath) {
+                    return "Enter a valid URL for the profile pic";
+                  }
+
                   return null;
                 },
                 controller: ProfilePic,

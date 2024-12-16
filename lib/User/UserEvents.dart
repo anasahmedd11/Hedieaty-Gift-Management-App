@@ -68,7 +68,7 @@ class _UserEventsState extends State<UserEvents> {
           .delete();
       _loadEvents();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Event deleted successfully')),
+        const SnackBar(backgroundColor: Colors.blue,content: Text('Event deleted successfully')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -189,13 +189,13 @@ class _UserEventsState extends State<UserEvents> {
               itemCount: sortedEvents.length,
               itemBuilder: (context, index) {
                 var event = Events(
-                  name: sortedEvents[index]['Name'],
-                  Date: sortedEvents[index]['Date'],
-                  Location: sortedEvents[index]['Location'],
-                  Description: sortedEvents[index]['Description'],
+                  name: sortedEvents[index]['Name'] ?? '',
+                  Date: sortedEvents[index]['Date'] ?? '',
+                  Location: sortedEvents[index]['Location'] ?? '',
+                  Description: sortedEvents[index]['Description'] ?? '',
                   ID: sortedEvents[index]['ID'] ?? 0,
                   status: sortedEvents[index]['Status'] ?? 'Unknown',
-                  FireStoreID: sortedEvents[index]['FireStoreID'],
+                  FireStoreID: sortedEvents[index]['FireStoreID']?? '',
                 );
                 return InkWell(
                   onTap: () {

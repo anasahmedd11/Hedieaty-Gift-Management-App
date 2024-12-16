@@ -2,7 +2,6 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:hedieaty_project/Models/Gift.dart';
 import 'package:hedieaty_project/Models/User.dart';
 import 'package:hedieaty_project/Models/Event.dart';
@@ -156,20 +155,108 @@ class _GiftDetailsPageState extends State<GiftDetailsPage> {
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-                                  _buildDetailSection(
-                                    "Status",
-                                    giftDetails!['isPledged'] == 1
-                                        ? "Pledged"
-                                        : "Available",
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Status:",
+                                          style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            giftDetails!['isPledged'] == 1
+                                                ? "Pledged"
+                                                : "Available",
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            style:
+                                                const TextStyle(fontSize: 19),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  _buildDetailSection(
-                                      "Category", giftDetails!['Category']),
-                                  _buildDetailSection(
-                                      "Price", "${giftDetails!['Price']}\$"),
-                                  _buildDetailSection(
-                                    "Description",
-                                    giftDetails!['Description'] ??
-                                        "No description",
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Category:",
+                                          style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            giftDetails!['Category'],
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            style:
+                                                const TextStyle(fontSize: 19),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Price:",
+                                          style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            "${giftDetails!['Price']}\$",
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            style:
+                                                const TextStyle(fontSize: 19),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Description:",
+                                          style: const TextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Center(
+                                          child: Text(
+                                            giftDetails!['Description'] ??
+                                                "No description",
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            style:
+                                                const TextStyle(fontSize: 19),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -180,29 +267,6 @@ class _GiftDetailsPageState extends State<GiftDetailsPage> {
                     ),
                   ],
                 ),
-    );
-  }
-
-  Widget _buildDetailSection(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "$title:",
-            style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          ),
-          Center(
-            child: Text(
-              value,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              style: const TextStyle(fontSize: 19),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

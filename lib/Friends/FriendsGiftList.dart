@@ -8,7 +8,7 @@ import 'package:hedieaty_project/Models/Event.dart';
 import 'package:hedieaty_project/Models/Gift.dart';
 import 'package:hedieaty_project/Friends/FriendGiftDetails.dart';
 import 'package:transparent_image/transparent_image.dart';
-import '../LocalNotifications.dart';
+import '../Notifications/LocalNotifications.dart';
 import '../User/UserPledgedGiftsList.dart';
 import '../Models/User.dart';
 

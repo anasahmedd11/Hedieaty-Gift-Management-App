@@ -114,7 +114,7 @@ class _UserGiftListPageState extends State<UserGiftListPage> {
           .delete();
       _loadGifts();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gift deleted successfully')),
+        const SnackBar(backgroundColor: Colors.blue,content: Text('Gift deleted successfully')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

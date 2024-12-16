@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -77,8 +76,15 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                         hintText: "Enter the new profile URL"),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your profile URL';
+                        return "Enter the profile pic please";
                       }
+
+                      // Check if the entered value is a valid URL
+                      Uri? uri = Uri.tryParse(value);
+                      if (uri == null || !uri.hasAbsolutePath) {
+                        return "Enter a valid URL for the profile pic";
+                      }
+
                       return null;
                     },
                     controller: _photoUrlController,
@@ -86,10 +92,11 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                   const SizedBox(height: 20),
                   Animate(
                     effects: [
-                      RotateEffect(
-                        begin: 1* pi, // Full 180° rotation
-                        end: 0.0, // Start with no rotation
-                        duration: 600.milliseconds,
+                      SlideEffect(
+                        begin: Offset(2, 0),
+                        end: Offset.zero,
+                        duration: 700.ms,
+                        curve: Curves.easeInOut,
                       ),
                     ],
                     child: ElevatedButton(

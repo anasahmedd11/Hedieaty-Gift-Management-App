@@ -268,8 +268,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please Enter your profile pic';
+                                        return "Enter the profile pic please";
                                       }
+
+                                      // Check if the entered value is a valid URL
+                                      Uri? uri = Uri.tryParse(value);
+                                      if (uri == null || !uri.hasAbsolutePath) {
+                                        return "Enter a valid URL for the profile pic";
+                                      }
+
                                       return null;
                                     },
                                   ),

@@ -5,6 +5,7 @@ import 'package:hedieaty_project/Profile/EditProfile.dart';
 import 'package:hedieaty_project/User/UserEvents.dart';
 
 import '../Models/Gift.dart';
+import '../User/PledgedGiftsTemporary.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -193,7 +194,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 20),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => PledgedGiftsTempPage(),));
+            },
             child: Animate(
               effects: [
                 SlideEffect(

@@ -6,7 +6,7 @@ class Events {
   final String Location;
   final String Description;
   final String status;
-  final List<Gift> gifts; // List of gifts associated with the event
+  final List<Gift> gifts;
   int ID;
   String? FireStoreID;
 
