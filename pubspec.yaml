@@ -53,8 +53,20 @@ dependencies:
   mockito: ^5.4.4
   build_runner: ^2.4.13
   shared_preferences: ^2.3.3
+  url_launcher: ^6.3.1
+  android_intent_plus: ^5.2.1
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.2
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+  min_sdk_android: 21
+  adaptive_icon_foreground: "assets/logo.png"
+  adaptive_icon_background: "#FFFFFF"
+
   flutter_test:
     sdk: flutter
 

@@ -28,7 +28,9 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
       await FirebaseAuth.instance.currentUser?.reload();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully!')),
+        const SnackBar(
+            backgroundColor: Colors.blue,
+            content: Text('Profile updated successfully!')),
       );
 
       _displayNameController.clear();
@@ -106,8 +108,8 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                           Navigator.pop(context);
                         }
                       },
-                      style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
                       child: const Text('Update Profile',
                           style: TextStyle(color: Colors.white)),
                     ),

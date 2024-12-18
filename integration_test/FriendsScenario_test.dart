@@ -87,17 +87,17 @@ void main() async {
       await tester.pumpAndSettle(Durations.extralong4);
       await tester.pumpAndSettle(Durations.extralong4);
 
-      expect(find.text('User1Friend'), findsOneWidget);
+      expect(find.text('Yahia'), findsOneWidget);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('User1Friend'));
+      await tester.tap(find.text('Yahia'));
       await tester.pumpAndSettle(Durations.extralong4);
 
-      expect(find.text('Event'), findsOneWidget);
+      expect(find.text('Reunion Party'), findsOneWidget);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Event'));
+      await tester.tap(find.text('Reunion Party'));
       await tester.pumpAndSettle(Durations.extralong4);
 
-      expect(find.text('Gift1'), findsOneWidget);
+      expect(find.text('Personalized Notebook'), findsOneWidget);
       expect(find.byKey(ValueKey('pledgingGiftsButton')), findsOneWidget);
       final pledgeGiftButton = find.byKey(ValueKey('pledgingGiftsButton'));
       await tester.tap(pledgeGiftButton);

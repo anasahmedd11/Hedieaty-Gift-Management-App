@@ -68,7 +68,9 @@ class _UserEventsState extends State<UserEvents> {
           .delete();
       _loadEvents();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(backgroundColor: Colors.blue,content: Text('Event deleted successfully')),
+        const SnackBar(
+            backgroundColor: Colors.blue,
+            content: Text('Event deleted successfully')),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -113,17 +115,15 @@ class _UserEventsState extends State<UserEvents> {
         String dateB = b['Date'];
         return _sortAscending ? dateA.compareTo(dateB) : dateB.compareTo(dateA);
       } else if (_sortField == 'status') {
-        // Fallback value 'upcoming' in case of nulls
-        String statusA = a['Status'] ?? 'upcoming';
-        String statusB = b['Status'] ?? 'upcoming';
+        String statusA = (a['Status'] ?? 'upcoming').toLowerCase();
+        String statusB = (b['Status'] ?? 'upcoming').toLowerCase();
 
-        // -1 if the status doesn't exist
-        int statusComparison = statusOrder[statusA] ?? -1;
-        int statusBValue = statusOrder[statusB] ?? -1;
+        int indexA = statusOrder[statusA] ?? 0; // Default to 0 if invalid
+        int indexB = statusOrder[statusB] ?? 0; // Default to 0 if invalid
 
         return _sortAscending
-            ? statusComparison.compareTo(statusBValue)
-            : statusBValue.compareTo(statusComparison);
+            ? indexA.compareTo(indexB)
+            : indexB.compareTo(indexA);
       }
       return 0;
     });
@@ -147,8 +147,10 @@ class _UserEventsState extends State<UserEvents> {
           Animate(
             effects: [
               SlideEffect(
-                begin: Offset(2, 0), // first value represents x, second represents y
-                end: Offset.zero,    // Slide to the original position
+                begin: Offset(2, 0),
+                // first value represents x, second represents y
+                end: Offset.zero,
+                // Slide to the original position
                 duration: 900.ms,
                 curve: Curves.easeInOut,
               ),
@@ -195,7 +197,7 @@ class _UserEventsState extends State<UserEvents> {
                   Description: sortedEvents[index]['Description'] ?? '',
                   ID: sortedEvents[index]['ID'] ?? 0,
                   status: sortedEvents[index]['Status'] ?? 'Unknown',
-                  FireStoreID: sortedEvents[index]['FireStoreID']?? '',
+                  FireStoreID: sortedEvents[index]['FireStoreID'] ?? '',
                 );
                 return InkWell(
                   onTap: () {
@@ -253,13 +255,14 @@ class _UserEventsState extends State<UserEvents> {
                                 ),
                               ],
                               child: IconButton(
-                                icon: const Icon(Icons.edit, color: Colors.white),
+                                icon:
+                                    const Icon(Icons.edit, color: Colors.white),
                                 onPressed: () {
                                   Navigator.push(
                                     context,
                                     PageRouteBuilder(
-                                      pageBuilder:
-                                          (context, animation, secondaryAnimation) {
+                                      pageBuilder: (context, animation,
+                                          secondaryAnimation) {
                                         return EditUserEvent(
                                           event: event,
                                           onEventUpdated: _loadEvents,
@@ -292,7 +295,8 @@ class _UserEventsState extends State<UserEvents> {
                                 ),
                               ],
                               child: IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.white),
+                                icon: const Icon(Icons.delete,
+                                    color: Colors.white),
                                 onPressed: () {
                                   _deleteEvent(event.FireStoreID!);
                                 },

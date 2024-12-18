@@ -12,7 +12,9 @@ import 'package:hedieaty_project/Models/User.dart';
 import 'package:hedieaty_project/OnBoarding/Login.dart';
 import 'package:hedieaty_project/User/AddUserEvent.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Notifications/LocalNotifications.dart';
+import '../Notifications/NotificationsUtilities.dart';
 import 'FriendsEventList.dart';
 import '../Profile/ProfilePage.dart';
 
@@ -42,7 +44,7 @@ Widget Badge(int count) {
   );
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   DataBaseClass mydb = DataBaseClass();
   List<Map<String, dynamic>> retrievedData = [];
 
@@ -51,6 +53,17 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     mydb.initialize();
     _loadData();
+
+    NotificationService().initNotification();
+    _loadPreferences();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("App lifecycle state changed: $state");
+    if (state == AppLifecycleState.resumed) {
+      _loadPreferences();
+    }
   }
 
   void _onSearchChanged(String query) {
@@ -85,7 +98,8 @@ class _HomePageState extends State<HomePage> {
               title: const Text('Add Manually'),
               key: ValueKey('addFriendManually'),
               onTap: () {
-                Navigator.pop(context); //close modal bottom sheet before navigating
+                Navigator.pop(
+                    context); //close modal bottom sheet before navigating
                 Navigator.push(
                   context,
                   PageRouteBuilder(
@@ -111,7 +125,8 @@ class _HomePageState extends State<HomePage> {
               title: const Text('Add from Contacts'),
               key: ValueKey('addFriendFromContacts'),
               onTap: () {
-                Navigator.pop(context); //close modal bottom sheet before navigating
+                Navigator.pop(
+                    context); //close modal bottom sheet before navigating
                 pickContact();
               },
             ),
@@ -233,6 +248,39 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print("Error picking contact: $e");
     }
+  }
+
+  bool isNotificationsEnabled = false;
+
+  Future<void> _loadPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool? notificationsEnabled = prefs.getBool('notificationsEnabled');
+    if (notificationsEnabled != null &&
+        notificationsEnabled != isNotificationsEnabled) {
+      // Ensure the widget is mounted before calling setState
+      if (mounted) {
+        setState(() {
+          isNotificationsEnabled = notificationsEnabled;
+        });
+      }
+    }
+  }
+
+  Future<void> _savePreferences(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notificationsEnabled', value);
+  }
+
+  Future<void> _toggleNotifications(bool value) async {
+    if (mounted) {
+      setState(() {
+        isNotificationsEnabled = value;
+      });
+    }
+    // Open notification settings
+    await NotificationUtils.openNotificationSettings(context);
+    // Save user preference after returning from settings
+    _savePreferences(value);
   }
 
   @override
@@ -617,7 +665,31 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-            )
+            ),
+            Animate(
+              effects: [
+                SlideEffect(
+                  begin: Offset(1, 0),
+                  // first value represents x, second represents y
+                  end: Offset.zero,
+                  // Slide to the original position
+                  duration: 400.ms,
+                  curve: Curves.easeInOut,
+                ),
+              ],
+              child: SwitchListTile(
+                title: Text(
+                  'Enable Notifications',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                activeColor: Colors.blue,
+                inactiveTrackColor: Colors.white,
+                inactiveThumbColor: Colors.blue,
+                value: isNotificationsEnabled,
+                onChanged: _toggleNotifications,
+              ),
+            ),
           ],
         ),
       ),

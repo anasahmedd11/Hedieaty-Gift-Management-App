@@ -112,19 +112,15 @@ class _EventListPageState extends State<EventListPage> {
             ? categoryA.compareTo(categoryB)
             : categoryB.compareTo(categoryA);
       } else if (_sortField == 'status') {
-        // Ensure both statuses are non-null or use a fallback value (e.g., 'upcoming')
-        String statusA = a['Status'] ?? 'upcoming';
-        String statusB = b['Status'] ?? 'upcoming';
+        String statusA = (a['Status'] ?? 'upcoming').toLowerCase();
+        String statusB = (b['Status'] ?? 'upcoming').toLowerCase();
 
-        // Compare status based on the predefined order with null checks
-        int statusComparison =
-            statusOrder[statusA] ?? -1; // Use -1 if the status doesn't exist
-        int statusBValue =
-            statusOrder[statusB] ?? -1; // Use -1 if the status doesn't exist
+        int indexA = statusOrder[statusA] ?? 0; // Default to 0 if invalid
+        int indexB = statusOrder[statusB] ?? 0; // Default to 0 if invalid
 
         return _sortAscending
-            ? statusComparison.compareTo(statusBValue)
-            : statusBValue.compareTo(statusComparison);
+            ? indexA.compareTo(indexB)
+            : indexB.compareTo(indexA);
       }
       return 0;
     });
