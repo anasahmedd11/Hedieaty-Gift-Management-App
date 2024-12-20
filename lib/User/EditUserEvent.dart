@@ -129,112 +129,114 @@ class _EditEventState extends State<EditUserEvent> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _editNameController,
-                decoration: const InputDecoration(labelText: 'Event Name'),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid event name (min 3 characters).';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Event Date'),
-                controller: _editDateController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter the event date";
-                  }
-                  //^(0[1-9]|[12][0-9]|3[01]): ensures that day is between 01 and 31.
-                  // -(0[1-9]|1[0-2]): ensures that  month is between 01 and 12.
-                  // -\d{4}$: ensures that year consists of 4-digits).
-                  RegExp dateRegExp = RegExp(
-                      r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$');
-
-                  // Check if the input matches the DD-MM-YYYY format
-                  if (!dateRegExp.hasMatch(value)) {
-                    return "Please enter a valid date in DD-MM-YYYY format";
-                  }
-
-                  // Split the input into day, month, and year
-                  List<String> dateParts = value.split('-');
-                  int day = int.parse(dateParts[0]);
-                  int month = int.parse(dateParts[1]);
-                  int year = int.parse(dateParts[2]);
-
-                  // Check if the date is valid
-                  try {
-                    DateTime date = DateTime(year, month, day);
-                    // Check if the day is valid for the given month and year
-                    if (date.month == month && date.day == day) {
-                      return null; // Valid date
-                    } else {
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _editNameController,
+                  decoration: const InputDecoration(labelText: 'Event Name'),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid event name (min 3 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Event Date'),
+                  controller: _editDateController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter the event date";
+                    }
+                    //^(0[1-9]|[12][0-9]|3[01]): ensures that day is between 01 and 31.
+                    // -(0[1-9]|1[0-2]): ensures that  month is between 01 and 12.
+                    // -\d{4}$: ensures that year consists of 4-digits).
+                    RegExp dateRegExp = RegExp(
+                        r'^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$');
+            
+                    // Check if the input matches the DD-MM-YYYY format
+                    if (!dateRegExp.hasMatch(value)) {
+                      return "Please enter a valid date in DD-MM-YYYY format";
+                    }
+            
+                    // Split the input into day, month, and year
+                    List<String> dateParts = value.split('-');
+                    int day = int.parse(dateParts[0]);
+                    int month = int.parse(dateParts[1]);
+                    int year = int.parse(dateParts[2]);
+            
+                    // Check if the date is valid
+                    try {
+                      DateTime date = DateTime(year, month, day);
+                      // Check if the day is valid for the given month and year
+                      if (date.month == month && date.day == day) {
+                        return null; // Valid date
+                      } else {
+                        return "Please enter a valid date";
+                      }
+                    } catch (e) {
                       return "Please enter a valid date";
                     }
-                  } catch (e) {
-                    return "Please enter a valid date";
-                  }
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Event Location'),
-                controller: _editLocationController,
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return "Please check the location";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration:
-                    const InputDecoration(labelText: 'Event Description'),
-                controller: _editDescriptionController,
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return "Please enter a valid gift name (min 3 characters).";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Spacer(),
-                  ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: _editEventData,
-                    child: const Text('Save Changes',
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ],
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  decoration: const InputDecoration(labelText: 'Event Location'),
+                  controller: _editLocationController,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return "Please enter a valid event location (min 3 characters and max 50 characters).";
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  decoration:
+                      const InputDecoration(labelText: 'Event Description'),
+                  controller: _editDescriptionController,
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return "Please enter a valid event description (min 3 characters and max 50 characters).";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    const Spacer(),
+                    ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: _editEventData,
+                      child: const Text('Save Changes',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

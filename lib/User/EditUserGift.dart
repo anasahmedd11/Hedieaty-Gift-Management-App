@@ -133,97 +133,99 @@ class _EditGiftPageState extends State<EditUserGift> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Gift Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.trim().length < 2||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid gift name (min 2 characters).';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(labelText: 'Category'),
-                validator: (value) {
-                  if (value == null || value.isEmpty||value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid gift category (min 3 characters).';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid gift description (min 3 characters).';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null ||
-                      double.tryParse(value) == null ||
-                      double.parse(value) <= 0) {
-                    return 'Gift price can\'t be negative or 0';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _imageUrlController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Enter the profile pic please";
-                  }
-
-                  // Check if the entered value is a valid URL
-                  Uri? uri = Uri.tryParse(value);
-                  if (uri == null || !uri.hasAbsolutePath) {
-                    return "Enter a valid URL for the profile pic";
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Spacer(),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel', style: TextStyle(color: Colors.white)),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: _editGiftData, // Save changes
-                    child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Gift Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.trim().length < 2||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid gift name (min 2 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _categoryController,
+                  decoration: const InputDecoration(labelText: 'Category'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty||value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid gift category (min 3 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid gift description (min 3 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _priceController,
+                  decoration: const InputDecoration(labelText: 'Price'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null ||
+                        double.tryParse(value) == null ||
+                        double.parse(value) <= 0) {
+                      return 'Gift price can\'t be negative or 0';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _imageUrlController,
+                  decoration: const InputDecoration(labelText: 'Image URL'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Enter the profile pic please";
+                    }
+            
+                    // Check if the entered value is a valid URL
+                    Uri? uri = Uri.tryParse(value);
+                    if (uri == null || !uri.hasAbsolutePath) {
+                      return "Enter a valid URL for the profile pic";
+                    }
+            
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    const Spacer(),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: _editGiftData, // Save changes
+                      child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -64,13 +64,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           const Text("Already a member? ",
                               style:
-                              TextStyle(color: Colors.white, fontSize: 18)),
+                                  TextStyle(color: Colors.white, fontSize: 18)),
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
                                       builder: (context) => LoginScreen()),
-                                      (route) => false);
+                                  (route) => false);
                             },
                             child: const Text("Sign in",
                                 style: TextStyle(
@@ -111,7 +111,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               boxShadow: [
                                 BoxShadow(
                                   color:
-                                  const Color.fromRGBO(173, 216, 230, 0.3),
+                                      const Color.fromRGBO(173, 216, 230, 0.3),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -189,7 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         onPressed: () {
                                           setState(() {
                                             _displayPassword =
-                                            !_displayPassword;
+                                                !_displayPassword;
                                           });
                                         },
                                         icon: Icon(
@@ -211,46 +211,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     },
                                   ),
                                 ),
-                                // Container(
-                                //   padding: const EdgeInsets.all(10),
-                                //   decoration: BoxDecoration(
-                                //     border: Border(
-                                //         bottom: BorderSide(
-                                //             color: Colors.grey.shade200)),
-                                //   ),
-                                //   child: TextFormField(
-                                //     controller: _confirmPasswordController,
-                                //     obscureText: !_displayPassword,
-                                //     decoration: InputDecoration(
-                                //       hintText: "Confirm Password",
-                                //       hintStyle: TextStyle(color: Colors.grey),
-                                //       border: InputBorder.none,
-                                //       suffixIcon: IconButton(
-                                //         onPressed: () {
-                                //           setState(() {
-                                //             _displayPassword =
-                                //                 !_displayPassword;
-                                //           });
-                                //         },
-                                //         icon: Icon(
-                                //           _displayPassword
-                                //               ? Icons.visibility
-                                //               : Icons.visibility_off,
-                                //           color: Colors.grey,
-                                //         ),
-                                //       ),
-                                //     ),
-                                //     validator: (value) {
-                                //       if (value == null || value.isEmpty) {
-                                //         return 'Please confirm your password';
-                                //       }
-                                //       if (value != _passwordController.text) {
-                                //         return 'Passwords do not match';
-                                //       }
-                                //       return null;
-                                //     },
-                                //   ),
-                                // ),
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
@@ -270,7 +230,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       if (value == null || value.isEmpty) {
                                         return "Enter the profile pic please";
                                       }
-
                                       // Check if the entered value is a valid URL
                                       Uri? uri = Uri.tryParse(value);
                                       if (uri == null || !uri.hasAbsolutePath) {
@@ -298,28 +257,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               _profilePicController.text,
                             );
                             if (status) {
-                              await myAuth.saveUserData(_nameController.text, _emailController.text);
+                              await myAuth.saveUserData(
+                                  _nameController.text, _emailController.text);
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 PageRouteBuilder(
-                                  pageBuilder: (context, animation,
-                                      secondaryAnimation) {
+                                  pageBuilder:
+                                      (context, animation, secondaryAnimation) {
                                     return HomePage();
                                   },
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
-                                    var scaleTween =
-                                    Tween(begin: 0.0, end: 1.0).chain(
-                                        CurveTween(
+                                    var scaleTween = Tween(begin: 0.0, end: 1.0)
+                                        .chain(CurveTween(
                                             curve: Curves.easeInOut));
                                     var scaleAnimation =
-                                    animation.drive(scaleTween);
+                                        animation.drive(scaleTween);
                                     return ScaleTransition(
                                         scale: scaleAnimation, child: child);
                                   },
-                                  transitionDuration: Duration(milliseconds: 700),
+                                  transitionDuration:
+                                      Duration(milliseconds: 700),
                                 ),
-                                    (Route<dynamic> route) => false,
+                                (Route<dynamic> route) => false,
                               );
                             } else {
                               AwesomeDialog(
@@ -327,10 +287,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 dialogType: DialogType.warning,
                                 animType: AnimType.rightSlide,
                                 title: 'Credential Problem',
-                                desc: 'Password is weak or email is already in use.',
+                                desc:
+                                    'Password is weak or email is already in use.',
                                 btnCancelOnPress: () {},
                                 btnOkOnPress: () {},
-                                customHeader: const Icon(Icons.error, size: 100, color: Colors.red),
+                                customHeader: const Icon(Icons.error,
+                                    size: 100, color: Colors.red),
                               ).show();
                             }
                           },
@@ -364,7 +326,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: ElevatedButton.icon(
                                 onPressed: () {},
                                 icon:
-                                Icon(Icons.g_mobiledata_outlined, size: 25),
+                                    Icon(Icons.g_mobiledata_outlined, size: 25),
                                 // Increase icon size
                                 label: const Text('Google',
                                     style: TextStyle(

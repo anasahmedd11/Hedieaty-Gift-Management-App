@@ -22,7 +22,7 @@ class AuthUser {
 
     if (user != null) {
       String uid = user.uid;
-      FirebaseFirestore.instance.collection('users').doc(uid).set({
+      FirebaseFirestore.instance.collection('Users').doc(uid).set({
         'name': name,
         'email': email,
       });

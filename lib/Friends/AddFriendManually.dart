@@ -122,81 +122,83 @@ class _AddState extends State<AddFriend> {
         padding: const EdgeInsets.all(20),
         child: Form(
           key: Mykey,
-          child: Column(
-            children: [
-              TextFormField(
-                key: ValueKey('addFriendManuallyNameTextFormField'),
-                decoration: const InputDecoration(hintText: "Enter the Name"),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length > 50) {
-                    return "Please enter a valid name (max 50 characters).";
-                  }
-                  return null;
-                },
-                controller: Name,
-              ),
-              TextFormField(
-                key: ValueKey('addFriendManuallyPhoneTextFormField'),
-                decoration: const InputDecoration(hintText: "Enter the Phone Number"),
-                validator: (value) {
-                  if (value == null || value.isEmpty || value.length!= 12) {
-                    return "Please enter a valid phone number (e.g., 201012345678)";
-                  }
-                  return null;
-                },
-                controller: PhoneNumber,
-              ),
-              TextFormField(
-                key: ValueKey('addFriendManuallyEmailTextFormField'),
-                decoration: const InputDecoration(hintText: "Enter the Email"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  final emailRegex =
-                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                  if (!emailRegex.hasMatch(value)) {
-                    return 'Email must include an "@" symbol and a domain name.';
-                  }
-                  return null;
-                },
-                controller: Email,
-              ),
-              TextFormField(
-                key: ValueKey('addFriendManuallyProfilePicTextFormField'),
-                decoration: const InputDecoration(hintText: "Enter the Profile Pic"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Enter the profile pic please";
-                  }
-
-                  // Check if the entered value is a valid URL
-                  Uri? uri = Uri.tryParse(value);
-                  if (uri == null || !uri.hasAbsolutePath) {
-                    return "Enter a valid URL for the profile pic";
-                  }
-
-                  return null;
-                },
-                controller: ProfilePic,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  ElevatedButton(
-                    key: ValueKey('addFriendManuallySubmitButton'),
-                    onPressed: saveUser,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  key: ValueKey('addFriendManuallyNameTextFormField'),
+                  decoration: const InputDecoration(hintText: "Enter the Name"),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length > 50) {
+                      return "Please enter a valid name (max 50 characters).";
+                    }
+                    return null;
+                  },
+                  controller: Name,
+                ),
+                TextFormField(
+                  key: ValueKey('addFriendManuallyPhoneTextFormField'),
+                  decoration: const InputDecoration(hintText: "Enter the Phone Number"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value.length!= 12) {
+                      return "Please enter a valid phone number (e.g., 201012345678)";
+                    }
+                    return null;
+                  },
+                  controller: PhoneNumber,
+                ),
+                TextFormField(
+                  key: ValueKey('addFriendManuallyEmailTextFormField'),
+                  decoration: const InputDecoration(hintText: "Enter the Email"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    final emailRegex =
+                    RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                    if (!emailRegex.hasMatch(value)) {
+                      return 'Email must include an "@" symbol and a domain name.';
+                    }
+                    return null;
+                  },
+                  controller: Email,
+                ),
+                TextFormField(
+                  key: ValueKey('addFriendManuallyProfilePicTextFormField'),
+                  decoration: const InputDecoration(hintText: "Enter the Profile Pic"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Enter the profile pic please";
+                    }
+            
+                    // Check if the entered value is a valid URL
+                    Uri? uri = Uri.tryParse(value);
+                    if (uri == null || !uri.hasAbsolutePath) {
+                      return "Enter a valid URL for the profile pic";
+                    }
+            
+                    return null;
+                  },
+                  controller: ProfilePic,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      key: ValueKey('addFriendManuallySubmitButton'),
+                      onPressed: saveUser,
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      child: const Text(
+                        "Save",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

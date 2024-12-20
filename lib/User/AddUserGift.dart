@@ -104,101 +104,103 @@ class _NewGiftState extends State<NewGift> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                key: ValueKey('addGiftNameTextFormField'),
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Enter the Name'),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length < 2 ||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid gift name (min 2 characters).';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                key: ValueKey('addGiftDescriptionTextFormField'),
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Enter the Description'),
-                validator: (value) {
-                  if (value == null ||
-                      value.isEmpty ||
-                      value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid gift description (min 3 characters).';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                key: ValueKey('addGiftCategoryTextFormField'),
-                controller: _categoryController,
-                decoration: const InputDecoration(labelText: 'Enter the Category'),
-                validator: (value) {
-                  if (value == null || value.isEmpty||value.trim().length < 3 ||
-                      value.trim().length > 50) {
-                    return 'Please enter a valid gift category (min 3 characters).';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                key: ValueKey('addGiftPriceTextFormField'),
-                controller: _priceController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Enter the Price (\$)'),
-                validator: (value) {
-                  if (value == null ||
-                      double.tryParse(value) == null ||
-                      double.parse(value) <= 0) {
-                    return 'Gift price can\'t be negative or 0';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                key: ValueKey('addGiftImageTextFormField'),
-                controller: _imageController,
-                decoration: const InputDecoration(labelText: 'Enter the Image URL'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Enter the profile pic please";
-                  }
-
-                  // Check if the entered value is a valid URL
-                  Uri? uri = Uri.tryParse(value);
-                  if (uri == null || !uri.hasAbsolutePath) {
-                    return "Enter a valid URL for the profile pic";
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  const Spacer(),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel', style: TextStyle(color: Colors.white)),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    key: const ValueKey('addUserGiftSubmitButton'),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: saveGift,
-                    child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextFormField(
+                  key: ValueKey('addGiftNameTextFormField'),
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Enter the Name'),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length < 2 ||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid gift name (min 2 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  key: ValueKey('addGiftDescriptionTextFormField'),
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Enter the Description'),
+                  validator: (value) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid gift description (min 3 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  key: ValueKey('addGiftCategoryTextFormField'),
+                  controller: _categoryController,
+                  decoration: const InputDecoration(labelText: 'Enter the Category'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty||value.trim().length < 3 ||
+                        value.trim().length > 50) {
+                      return 'Please enter a valid gift category (min 3 characters and max 50 characters).';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  key: ValueKey('addGiftPriceTextFormField'),
+                  controller: _priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Enter the Price (\$)'),
+                  validator: (value) {
+                    if (value == null ||
+                        double.tryParse(value) == null ||
+                        double.parse(value) <= 0) {
+                      return 'Gift price can\'t be negative or 0';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  key: ValueKey('addGiftImageTextFormField'),
+                  controller: _imageController,
+                  decoration: const InputDecoration(labelText: 'Enter the Image URL'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Enter the profile pic please";
+                    }
+            
+                    // Check if the entered value is a valid URL
+                    Uri? uri = Uri.tryParse(value);
+                    if (uri == null || !uri.hasAbsolutePath) {
+                      return "Enter a valid URL for the profile pic";
+                    }
+            
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    const Spacer(),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      key: const ValueKey('addUserGiftSubmitButton'),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      onPressed: saveGift,
+                      child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

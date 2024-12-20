@@ -222,7 +222,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       return ScaleTransition(
                                           scale: scaleAnimation, child: child);
                                     },
-                                    transitionDuration: Duration(milliseconds: 700),
+                                    transitionDuration:
+                                        Duration(milliseconds: 700),
                                   ),
                                 );
                               } else {

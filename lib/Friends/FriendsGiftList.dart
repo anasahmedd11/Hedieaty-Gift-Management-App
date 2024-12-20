@@ -122,7 +122,7 @@ class _GiftListPageState extends State<GiftListPage> {
             : pledgeStatusB.compareTo(pledgeStatusA);
       } else if (_sortField == 'eventDate') {
         DateTime eventDateA = DateTime.parse(
-            widget.event.Date); // Assuming you store event date as a string
+            widget.event.Date); // As event date is stored as a string
         DateTime eventDateB = DateTime.parse(widget.event.Date);
 
         return _sortAscending
